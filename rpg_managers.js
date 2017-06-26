@@ -2,11 +2,13 @@
 // rpg_managers.js v1.1.0
 //=============================================================================
 
+//该文件包含了游戏运行的一些主系统 如资源加载查找 音频主控制 数据本地化(存档) 等等
 //-----------------------------------------------------------------------------
 // DataManager
 //
 // The static class that manages the database and game objects.
 
+//数据管理器
 function DataManager() {
     throw new Error('This is a static class');
 }
@@ -62,6 +64,9 @@ DataManager._databaseFiles = [
     { name: '$dataMapInfos',     src: 'MapInfos.json'     }
 ];
 
+/**
+ * 加载json数据
+ */
 DataManager.loadDatabase = function() {
     var test = this.isBattleTest() || this.isEventTest();
     var prefix = test ? 'Test_' : '';
@@ -191,6 +196,9 @@ DataManager.isArmor = function(item) {
     return item && $dataArmors.contains(item);
 };
 
+/**
+ * 初始化子数据管理器
+ */
 DataManager.createGameObjects = function() {
     $gameTemp          = new Game_Temp();
     $gameSystem        = new Game_System();
@@ -1568,20 +1576,28 @@ SceneManager._screenWidth       = 816;
 SceneManager._screenHeight      = 624;
 SceneManager._boxWidth          = 816;
 SceneManager._boxHeight         = 624;
+//刷新频率
 SceneManager._deltaTime = 1.0 / 60.0;
 SceneManager._currentTime = SceneManager._getTimeInMs();
 SceneManager._accumulator = 0.0;
 
+/**
+ * 主系统运行
+ * @param sceneClass
+ */
 SceneManager.run = function(sceneClass) {
     try {
+        //初始化主系统
         this.initialize();
         this.goto(sceneClass);
+        //开启主循环
         this.requestUpdate();
     } catch (e) {
         this.catchException(e);
     }
 };
 
+//主系统初始化
 SceneManager.initialize = function() {
     this.initGraphics();
     this.checkFileAccess();
@@ -1592,15 +1608,23 @@ SceneManager.initialize = function() {
     this.setupErrorHandlers();
 };
 
+//初始化渲染器
 SceneManager.initGraphics = function() {
+
+    //根据当前上下文 获取渲染类型(webgl或者普通绘图)
     var type = this.preferableRendererType();
+    //初始化渲染器
     Graphics.initialize(this._screenWidth, this._screenHeight, type);
     Graphics.boxWidth = this._boxWidth;
     Graphics.boxHeight = this._boxHeight;
+    //设置加载图片的路径
     Graphics.setLoadingImage('img/system/Loading.png');
+    //如果设置了显示fps的选项
     if (Utils.isOptionValid('showfps')) {
+        //显示fps
         Graphics.showFps();
     }
+    //如果webgl可用 优先使用webgl作为底层渲染机制
     if (type === 'webgl') {
         this.checkWebGL();
     }
@@ -1628,10 +1652,14 @@ SceneManager.checkWebGL = function() {
     }
 };
 
+/**
+ * 检测浏览器是否有权限读取本地文件
+ */
 SceneManager.checkFileAccess = function() {
     if (!Utils.canReadGameFiles()) {
         throw new Error('Your browser does not allow to read local files.');
     }
+
 };
 
 SceneManager.initAudio = function() {
@@ -1674,10 +1702,15 @@ SceneManager.requestUpdate = function() {
     }
 };
 
+/**
+ * 主循环
+ */
 SceneManager.update = function() {
     try {
+        //计时开始 他这里的更新可能是跟unity的时间间隔式(update)差不多而不是锁定时间的循环(fixupdate)
         this.tickStart();
         this.updateMain();
+        //计时结束 计算出该循环运算的时间
         this.tickEnd();
     } catch (e) {
         this.catchException(e);
@@ -1740,6 +1773,7 @@ SceneManager.updateInputData = function() {
     TouchInput.update();
 };
 
+//主循环
 SceneManager.updateMain = function() {
 
     var newTime = this._getTimeInMs();
@@ -1748,12 +1782,17 @@ SceneManager.updateMain = function() {
     this._currentTime = newTime;
     this._accumulator += fTime;
 
+    //如果到目前为止累加的时间超过了一个更新周期(1/60)
     while (this._accumulator >= this._deltaTime) {
+        //更新输入数据
         this.updateInputData();
         this.changeScene();
+        //更新场景 貌似是将主循环分发给游戏对象的内部循环
         this.updateScene();
+        //重置累计时间(没有使用清零值得学习..如果是我写估计就直接清零了 想想他这样写准确性高一点)
         this._accumulator -= this._deltaTime;
     }
+    //渲染场景
     this.renderScene();
     this.requestUpdate();
 };
@@ -2532,12 +2571,13 @@ BattleManager.gainDropItems = function() {
 //-----------------------------------------------------------------------------
 // PluginManager
 //
-// The static class that manages the plugins.
+//插件管理类
 
 function PluginManager() {
     throw new Error('This is a static class');
 }
 
+//插件所在的根路径
 PluginManager._path         = 'js/plugins/';
 PluginManager._scripts      = [];
 PluginManager._errorUrls    = [];
@@ -2553,6 +2593,9 @@ PluginManager.setup = function(plugins) {
     }, this);
 };
 
+/**
+ * 检测是否加载正确 如果有插件加载失败 则抛出错误
+ */
 PluginManager.checkErrors = function() {
     var url = this._errorUrls.shift();
     if (url) {
@@ -2560,14 +2603,25 @@ PluginManager.checkErrors = function() {
     }
 };
 
+/**
+ * 根据key获取value
+ * @param name
+ * @returns {*|{}}
+ */
 PluginManager.parameters = function(name) {
     return this._parameters[name.toLowerCase()] || {};
 };
 
+/**
+ * 设置关于插件的键值对
+ * @param name
+ * @param parameters
+ */
 PluginManager.setParameters = function(name, parameters) {
     this._parameters[name.toLowerCase()] = parameters;
 };
 
+//根据文件名加载一个插件
 PluginManager.loadScript = function(name) {
     var url = this._path + name;
     var script = document.createElement('script');

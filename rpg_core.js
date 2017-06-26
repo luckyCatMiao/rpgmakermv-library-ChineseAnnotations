@@ -9,6 +9,7 @@
  *
  * @class JsExtensions
  */
+//js扩展类
 function JsExtensions() {
     throw new Error('This is not a class');
 }

@@ -6,7 +6,7 @@
 // Scene_Base
 //
 // The superclass of all scenes within the game.
-
+//场景基类
 function Scene_Base() {
     this.initialize.apply(this, arguments);
 }
@@ -144,7 +144,7 @@ Scene_Base.prototype.slowFadeSpeed = function() {
 // Scene_Boot
 //
 // The scene class for initializing the entire game.
-
+//启动场景
 function Scene_Boot() {
     this.initialize.apply(this, arguments);
 }
