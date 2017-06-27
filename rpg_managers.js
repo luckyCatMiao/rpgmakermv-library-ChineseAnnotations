@@ -1876,6 +1876,10 @@ SceneManager.isPreviousScene = function(sceneClass) {
     return this._previousClass === sceneClass;
 };
 
+/**
+ * 在场景之间跳转
+ * @param sceneClass
+ */
 SceneManager.goto = function(sceneClass) {
     if (sceneClass) {
         this._nextScene = new sceneClass();

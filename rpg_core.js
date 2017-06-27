@@ -1101,6 +1101,11 @@ Bitmap.prototype._setDirty = function() {
  *
  * @class Graphics
  */
+
+/**
+ * 貌似是渲染类
+ * @constructor
+ */
 function Graphics() {
     throw new Error('This is a static class');
 }

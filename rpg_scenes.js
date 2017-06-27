@@ -6,11 +6,15 @@
 // Scene_Base
 //
 // The superclass of all scenes within the game.
-//场景基类
+//场景基类 这里的场景概念和unity里的scene flash里的关键帧(或者说场景)类似
+//不过他居然把scene又做成一个大的displaycontainer...
+// 感觉可以分开写 不要把渲染也扯进来 只作为单独的游戏跳转单元就好了
 function Scene_Base() {
     this.initialize.apply(this, arguments);
 }
 
+//继承于Stage类 所以scene是一个特殊的显示对象 可以理解为安卓里最外面的布局对象 以及flash的stage对象
+//其实场景跳转的实现估计也就和安卓fragment的插拔差不多 一个root对象显示另一个root不显示
 Scene_Base.prototype = Object.create(Stage.prototype);
 Scene_Base.prototype.constructor = Scene_Base;
 
@@ -29,6 +33,11 @@ Scene_Base.prototype.isActive = function() {
     return this._active;
 };
 
+/**
+ * 场景是否准备完毕 因为场景需要用到一些资源 这些资源需要加载到内存里
+ 其实这种分场景的设计架构挺好的 Unity也是这样 可以把资源分开加载了 不会一开始花费很长的加载时间
+ */
+
 Scene_Base.prototype.isReady = function() {
     return ImageManager.isReady();
 };
@@ -38,8 +47,11 @@ Scene_Base.prototype.start = function() {
 };
 
 Scene_Base.prototype.update = function() {
+    //更新渐变
     this.updateFade();
+    //更新子级
     this.updateChildren();
+    //检查音频管理器是否出错
     AudioManager.checkErrors();
 };
 
@@ -47,6 +59,10 @@ Scene_Base.prototype.stop = function() {
     this._active = false;
 };
 
+/**
+ * 是否正在渐变中
+ * @returns {boolean}
+ */
 Scene_Base.prototype.isBusy = function() {
     return this._fadeDuration > 0;
 };
@@ -68,6 +84,11 @@ Scene_Base.prototype.addWindow = function(window) {
     this._windowLayer.addChild(window);
 };
 
+/**
+ * 开始淡入
+ * @param duration
+ * @param white
+ */
 Scene_Base.prototype.startFadeIn = function(duration, white) {
     this.createFadeSprite(white);
     this._fadeSign = 1;
@@ -75,6 +96,11 @@ Scene_Base.prototype.startFadeIn = function(duration, white) {
     this._fadeSprite.opacity = 255;
 };
 
+/**
+ * 开始淡出
+ * @param duration
+ * @param white
+ */
 Scene_Base.prototype.startFadeOut = function(duration, white) {
     this.createFadeSprite(white);
     this._fadeSign = -1;
@@ -107,6 +133,7 @@ Scene_Base.prototype.updateFade = function() {
 };
 
 Scene_Base.prototype.updateChildren = function() {
+    //依次调用子对象的内部循环
     this.children.forEach(function(child) {
         if (child.update) {
             child.update();
@@ -144,7 +171,7 @@ Scene_Base.prototype.slowFadeSpeed = function() {
 // Scene_Boot
 //
 // The scene class for initializing the entire game.
-//启动场景
+//启动场景(这个场景貌似不会显示 在加载一些数据初始化之后就跳转到标题场景了)
 function Scene_Boot() {
     this.initialize.apply(this, arguments);
 }
@@ -154,13 +181,17 @@ Scene_Boot.prototype.constructor = Scene_Boot;
 
 Scene_Boot.prototype.initialize = function() {
     Scene_Base.prototype.initialize.call(this);
+    //记录启动的日期
     this._startDate = Date.now();
 };
 
 Scene_Boot.prototype.create = function() {
     Scene_Base.prototype.create.call(this);
+    //加载游戏数据
     DataManager.loadDatabase();
+    //加载游戏配置
     ConfigManager.load();
+    //加载不知道什么数据
     this.loadSystemImages();
 };
 
@@ -178,14 +209,24 @@ Scene_Boot.prototype.loadSystemImages = function() {
     ImageManager.loadSystem('ButtonSet');
 };
 
+/**
+ * 数据是否加载完毕
+ * @returns {*}
+ */
 Scene_Boot.prototype.isReady = function() {
+
     if (Scene_Base.prototype.isReady.call(this)) {
+        //检测是否数据装载完毕
         return DataManager.isDatabaseLoaded() && this.isGameFontLoaded();
     } else {
         return false;
     }
 };
 
+/**
+ * 游戏字体是否加载完毕
+ * @returns {boolean}
+ */
 Scene_Boot.prototype.isGameFontLoaded = function() {
     if (Graphics.isFontLoaded('GameFont')) {
         return true;
