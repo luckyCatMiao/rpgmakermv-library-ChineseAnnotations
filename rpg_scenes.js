@@ -197,7 +197,9 @@ Scene_Boot.prototype.isGameFontLoaded = function() {
     }
 };
 
+
 Scene_Boot.prototype.start = function() {
+    //调用基类方法,相当于super.start()
     Scene_Base.prototype.start.call(this);
     SoundManager.preloadImportantSounds();
     if (DataManager.isBattleTest()) {
@@ -206,10 +208,15 @@ Scene_Boot.prototype.start = function() {
     } else if (DataManager.isEventTest()) {
         DataManager.setupEventTest();
         SceneManager.goto(Scene_Map);
-    } else {
+    } else
+    {
+        //检查玩家的位置是否正确设置
         this.checkPlayerLocation();
+        //初始化游戏数据
         DataManager.setupNewGame();
+        //跳转到标题界面场景
         SceneManager.goto(Scene_Title);
+        //标题的命令组初始化
         Window_TitleCommand.initCommandPosition();
     }
     this.updateDocumentTitle();
@@ -230,10 +237,15 @@ Scene_Boot.prototype.checkPlayerLocation = function() {
 //
 // The scene class of the title screen.
 
+/**
+ * 标题界面场景
+ * @constructor
+ */
 function Scene_Title() {
     this.initialize.apply(this, arguments);
 }
 
+//继承于Scene_Base
 Scene_Title.prototype = Object.create(Scene_Base.prototype);
 Scene_Title.prototype.constructor = Scene_Title;
 
@@ -275,6 +287,8 @@ Scene_Title.prototype.terminate = function() {
 };
 
 Scene_Title.prototype.createBackground = function() {
+    //添加图片到容器中 scene貌似也和渲染有关 看代码是继承于pixi的类似于as3的displaycontainer的东西
+    //我感觉不和渲染搅在一起会更好..我写的话肯定分开两个类了
     this._backSprite1 = new Sprite(ImageManager.loadTitle1($dataSystem.title1Name));
     this._backSprite2 = new Sprite(ImageManager.loadTitle2($dataSystem.title2Name));
     this.addChild(this._backSprite1);
@@ -289,10 +303,12 @@ Scene_Title.prototype.createForeground = function() {
     }
 };
 
+//绘制游戏标题
 Scene_Title.prototype.drawGameTitle = function() {
     var x = 20;
     var y = Graphics.height / 4;
     var maxWidth = Graphics.width - x * 2;
+    //获取标题数据
     var text = $dataSystem.gameTitle;
     this._gameTitleSprite.bitmap.outlineColor = 'black';
     this._gameTitleSprite.bitmap.outlineWidth = 8;

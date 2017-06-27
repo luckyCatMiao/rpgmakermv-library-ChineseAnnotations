@@ -1295,25 +1295,31 @@ Window_Selectable.prototype.refresh = function() {
 // Window_Command
 //
 // The superclass of windows for selecting a command.
-
+//其实所谓的window都可以理解成ui控件(...刚开始被这个window的名字迷惑了),然后这个就差不多是一般UI库里面的list(可能跟java swing里的只支持文字的list更像)
+//应该是一个特化的List
 function Window_Command() {
     this.initialize.apply(this, arguments);
 }
 
+//继承于Window_Selectable
 Window_Command.prototype = Object.create(Window_Selectable.prototype);
 Window_Command.prototype.constructor = Window_Command;
 
 Window_Command.prototype.initialize = function(x, y) {
+    //清空列表
     this.clearCommandList();
+    //这个方法是一个空实现不知道啥意思
     this.makeCommandList();
     var width = this.windowWidth();
     var height = this.windowHeight();
+    //调用父类方法
     Window_Selectable.prototype.initialize.call(this, x, y, width, height);
     this.refresh();
+    //默认选中List中的第一项
     this.select(0);
     this.activate();
 };
-
+//宽度居然锁定了??不知道为什么 字长度不同多出来怎么办
 Window_Command.prototype.windowWidth = function() {
     return 240;
 };
@@ -5727,6 +5733,7 @@ Window_BattleItem.prototype.hide = function() {
 //
 // The window for selecting New Game/Continue on the title screen.
 
+//标题界面命令窗口(新游戏..继续游戏啥的)
 function Window_TitleCommand() {
     this.initialize.apply(this, arguments);
 }

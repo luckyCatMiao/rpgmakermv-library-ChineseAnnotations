@@ -3185,10 +3185,15 @@ TouchInput._onRelease = function(x, y) {
  * @constructor
  * @param {Bitmap} bitmap The image for the sprite
  */
+/**
+ * 能被渲染到屏幕上的基类 类似于as3的displayobject
+ * @constructor
+ */
 function Sprite() {
     this.initialize.apply(this, arguments);
 }
 
+//继承于pixi渲染框架的对应类
 Sprite.prototype = Object.create(PIXI.Sprite.prototype);
 Sprite.prototype.constructor = Sprite;
 

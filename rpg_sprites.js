@@ -185,6 +185,10 @@ Sprite_Button.prototype.canvasToLocalY = function(y) {
 //
 // The sprite for displaying a character.
 
+/**
+ * 游戏人物的基类
+ * @constructor
+ */
 function Sprite_Character() {
     this.initialize.apply(this, arguments);
 }

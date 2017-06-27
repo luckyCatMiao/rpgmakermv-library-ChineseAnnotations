@@ -215,8 +215,11 @@ DataManager.createGameObjects = function() {
     $gamePlayer        = new Game_Player();
 };
 
+//初始化游戏数据
 DataManager.setupNewGame = function() {
+    //创建子游戏数据集
     this.createGameObjects();
+    //加载存档文件
     this.selectSavefileForNewGame();
     $gameParty.setupStartingMembers();
     $gamePlayer.reserveTransfer($dataSystem.startMapId,
