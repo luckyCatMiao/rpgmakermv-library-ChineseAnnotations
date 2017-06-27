@@ -7,6 +7,10 @@
 //
 // The sprite class with a feature which displays animations.
 
+/**
+ * 显示对象基类 sprite和window的继承分别从pixi的两个基类继承出来,并没有公共的基类
+ * @constructor
+ */
 function Sprite_Base() {
     this.initialize.apply(this, arguments);
 }

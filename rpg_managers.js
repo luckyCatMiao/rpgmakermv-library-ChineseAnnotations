@@ -789,6 +789,10 @@ StorageManager.webStorageKey = function(savefileId) {
 //
 // The static class that loads images, creates bitmap objects and retains them.
 
+/**
+ * 图片资源管理器
+ * @constructor
+ */
 function ImageManager() {
     throw new Error('This is a static class');
 }

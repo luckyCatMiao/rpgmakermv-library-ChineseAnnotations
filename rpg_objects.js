@@ -1,17 +1,22 @@
 //=============================================================================
 // rpg_objects.js v1.1.0
 //=============================================================================
-
+//游戏对象类
 //-----------------------------------------------------------------------------
 // Game_Temp
 //
 // The game object class for temporary data that is not included in save data.
 
+/**
+ * 保存游戏临时数据
+ * @constructor
+ */
 function Game_Temp() {
     this.initialize.apply(this, arguments);
 }
 
 Game_Temp.prototype.initialize = function() {
+    //获取是否是在测试模式
     this._isPlaytest = Utils.isOptionValid('test');
     this._commonEventId = 0;
     this._destinationX = null;
@@ -65,6 +70,10 @@ Game_Temp.prototype.destinationY = function() {
 //
 // The game object class for the system data.
 
+/**
+ * 游戏系统数据，保存游戏的一些状态 比如死亡次数逃跑次数 该bean应该是单例
+ * @constructor
+ */
 function Game_System() {
     this.initialize.apply(this, arguments);
 }
@@ -276,6 +285,11 @@ Game_System.prototype.replayWalkingBgm = function() {
 //
 // The game object class for the timer.
 
+/**
+ * 游戏中的计时器
+ * 他这里面的设计理念好像都是弄一个Init方法 然后通过构造器转接参数 直接写在构造器里不好吗??难道还有多次初始化的必要??...不懂
+ * @constructor
+ */
 function Game_Timer() {
     this.initialize.apply(this, arguments);
 }
@@ -312,6 +326,7 @@ Game_Timer.prototype.seconds = function() {
 };
 
 Game_Timer.prototype.onExpire = function() {
+    //这里直接调用了一个什么东西...这设计不行啊..应该在外层结合这两个类的 我还以为是通用的计时器类 这样不就绑死了吗
     BattleManager.abort();
 };
 

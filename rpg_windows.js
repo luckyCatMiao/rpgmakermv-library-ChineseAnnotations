@@ -7,6 +7,13 @@
 //
 // The superclass of all windows within the game.
 
+
+//ui类库
+
+/**
+ * ui基类
+ * @constructor
+ */
 function Window_Base() {
     this.initialize.apply(this, arguments);
 }
@@ -16,11 +23,17 @@ Window_Base.prototype.constructor = Window_Base;
 
 Window_Base.prototype.initialize = function(x, y, width, height) {
     Window.prototype.initialize.call(this);
+    //加载窗体皮肤
     this.loadWindowskin();
+    //移动到指定位置
     this.move(x, y, width, height);
+    //更新内边距
     this.updatePadding();
+    //更新透明度
     this.updateBackOpacity();
+    //更新色调
     this.updateTone();
+    //填充内容
     this.createContents();
     this._opening = false;
     this._closing = false;
