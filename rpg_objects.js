@@ -6370,18 +6370,23 @@ Game_CharacterBase.prototype.reverseDir = function(d) {
     return 10 - d;
 };
 
+//判断指定位置是否能通行
 Game_CharacterBase.prototype.canPass = function(x, y, d) {
     var x2 = $gameMap.roundXWithDirection(x, d);
     var y2 = $gameMap.roundYWithDirection(y, d);
+    //判断该位置是否有效(是否越界)
     if (!$gameMap.isValid(x2, y2)) {
         return false;
     }
+    //判断是否在debug模式
     if (this.isThrough() || this.isDebugThrough()) {
         return true;
     }
+    //判断该位置是否设置了可通行
     if (!this.isMapPassable(x, y, d)) {
         return false;
     }
+    //这个不知道判断啥
     if (this.isCollidedWithCharacters(x2, y2)) {
         return false;
     }
@@ -7375,6 +7380,10 @@ Game_Character.prototype.searchLimit = function() {
 // The game object class for the player. It contains event starting
 // determinants and map scrolling functions.
 
+/**
+ * 游戏人物对象
+ * @constructor
+ */
 function Game_Player() {
     this.initialize.apply(this, arguments);
 }
@@ -7604,22 +7613,33 @@ Game_Player.prototype.startMapEvent = function(x, y, triggers, normal) {
     }
 };
 
+/**
+ * 根据输入进行移动
+ */
 Game_Player.prototype.moveByInput = function() {
     if (!this.isMoving() && this.canMove()) {
+
         var direction = this.getInputDirection();
         if (direction > 0) {
             $gameTemp.clearDestination();
-        } else if ($gameTemp.isDestinationValid()){
+        }
+        //如果是鼠标点击移动 则进行寻路
+            else if ($gameTemp.isDestinationValid()){
             var x = $gameTemp.destinationX();
             var y = $gameTemp.destinationY();
             direction = this.findDirectionTo(x, y);
         }
+        //如果是键盘移动
         if (direction > 0) {
             this.executeMove(direction);
         }
     }
 };
 
+/**
+ * 当前是否可以移动
+ * @returns {boolean}
+ */
 Game_Player.prototype.canMove = function() {
     if ($gameMap.isEventRunning() || $gameMessage.isBusy()) {
         return false;
@@ -7649,7 +7669,9 @@ Game_Player.prototype.update = function(sceneActive) {
     var lastScrolledY = this.scrolledY();
     var wasMoving = this.isMoving();
     this.updateDashing();
+    //如果场景正在运行
     if (sceneActive) {
+        //使用输入更新人物位置
         this.moveByInput();
     }
     Game_Character.prototype.update.call(this);
@@ -7941,6 +7963,9 @@ Game_Player.prototype.getOffVehicle = function() {
     return this._vehicleGettingOff;
 };
 
+/**
+ * 强制移动(无视不可通行地区)
+ */
 Game_Player.prototype.forceMoveForward = function() {
     this.setThrough(true);
     this.moveForward();
@@ -7951,6 +7976,10 @@ Game_Player.prototype.isOnDamageFloor = function() {
     return $gameMap.isDamageFloor(this.x, this.y) && !this.isInAirship();
 };
 
+/**
+ * 进行移动
+ * @param d
+ */
 Game_Player.prototype.moveStraight = function(d) {
     if (this.canPass(this.x, this.y, d)) {
         this._followers.updateMove();

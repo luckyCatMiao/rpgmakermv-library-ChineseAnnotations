@@ -12,7 +12,7 @@
 function DataManager() {
     throw new Error('This is a static class');
 }
-
+//数据
 var $dataActors       = null;
 var $dataClasses      = null;
 var $dataSkills       = null;
@@ -28,6 +28,8 @@ var $dataCommonEvents = null;
 var $dataSystem       = null;
 var $dataMapInfos     = null;
 var $dataMap          = null;
+
+//逻辑对象
 var $gameTemp         = null;
 var $gameSystem       = null;
 var $gameScreen       = null;
