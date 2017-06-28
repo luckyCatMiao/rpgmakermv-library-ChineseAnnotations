@@ -108,6 +108,8 @@ Scene_Base.prototype.startFadeOut = function(duration, white) {
     this._fadeSprite.opacity = 0;
 };
 
+
+//貌似淡入淡出都是在最底层加一个纯色的四边形 然后开始渐变颜色来实现的
 Scene_Base.prototype.createFadeSprite = function(white) {
     if (!this._fadeSprite) {
         this._fadeSprite = new ScreenSprite();
@@ -145,6 +147,8 @@ Scene_Base.prototype.popScene = function() {
     SceneManager.pop();
 };
 
+//检查人是否都死光,是的话跳转到游戏结束场景
+//说实话 这种耦合写的太糟糕了 应该由一个第三方类来判断 然后控制跳转
 Scene_Base.prototype.checkGameover = function() {
     if ($gameParty.isAllDead()) {
         SceneManager.goto(Scene_Gameover);
@@ -364,6 +368,10 @@ Scene_Title.prototype.centerSprite = function(sprite) {
     sprite.anchor.y = 0.5;
 };
 
+
+/**
+ * 添加ui(list命令组)
+ */
 Scene_Title.prototype.createCommandWindow = function() {
     this._commandWindow = new Window_TitleCommand();
     this._commandWindow.setHandler('newGame',  this.commandNewGame.bind(this));
@@ -372,9 +380,15 @@ Scene_Title.prototype.createCommandWindow = function() {
     this.addWindow(this._commandWindow);
 };
 
+/**
+ * 点击新游戏后触发 跳转到地图场景
+ */
 Scene_Title.prototype.commandNewGame = function() {
+
     DataManager.setupNewGame();
+    //关闭窗口
     this._commandWindow.close();
+    //淡出
     this.fadeOutAll();
     SceneManager.goto(Scene_Map);
 };
@@ -400,6 +414,10 @@ Scene_Title.prototype.playTitleMusic = function() {
 //
 // The scene class of the map screen.
 
+/**
+ * 地图场景(游戏场景)
+ * @constructor
+ */
 function Scene_Map() {
     this.initialize.apply(this, arguments);
 }
@@ -419,6 +437,7 @@ Scene_Map.prototype.create = function() {
     Scene_Base.prototype.create.call(this);
     this._transfer = $gamePlayer.isTransferring();
     var mapId = this._transfer ? $gamePlayer.newMapId() : $gameMap.mapId();
+    //加载地图数据
     DataManager.loadMapData(mapId);
 };
 
@@ -469,6 +488,10 @@ Scene_Map.prototype.updateMainMultiply = function() {
     }
 };
 
+
+/**
+ * 地图场景主循环
+ */
 Scene_Map.prototype.updateMain = function() {
     var active = this.isActive();
     $gameMap.update(active);

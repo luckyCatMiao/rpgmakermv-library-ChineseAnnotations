@@ -443,6 +443,7 @@ Bitmap.prototype.initialize = function(width, height) {
 
 /**
  * Loads a image file and returns a new bitmap object.
+ * 加载一张图片
  *
  * @static
  * @method load
@@ -5667,7 +5668,7 @@ Window.prototype._updatePauseSign = function() {
 //-----------------------------------------------------------------------------
 /**
  * The layer which contains game windows.
- *
+ *貌似是在scene中专门放ui对象的一层 可能要保证ui对象的层级大于所有的游戏对象吧
  * @class WindowLayer
  * @constructor
  */

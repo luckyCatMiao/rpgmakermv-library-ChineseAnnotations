@@ -5733,7 +5733,7 @@ Window_BattleItem.prototype.hide = function() {
 //
 // The window for selecting New Game/Continue on the title screen.
 
-//标题界面命令窗口(新游戏..继续游戏啥的)
+//命令list 特化的list控件,可以设置每一个选项对应一个handle(新游戏..继续游戏啥的)
 function Window_TitleCommand() {
     this.initialize.apply(this, arguments);
 }

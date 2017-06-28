@@ -876,13 +876,21 @@ ImageManager.loadEmptyBitmap = function() {
     return this._cache[null];
 };
 
+/**
+ * 加载文件系统中的图片
+ * @param path
+ * @param hue
+ * @returns {*}
+ */
 ImageManager.loadNormalBitmap = function(path, hue) {
     var key = path + ':' + hue;
+    //缓存机制 检测该图片是否已经加载
     if (!this._cache[key]) {
         var bitmap = Bitmap.load(path);
         bitmap.addLoadListener(function() {
             bitmap.rotateHue(hue);
         });
+        //放入缓存中 他这里并不是加载完毕后再放入 而是放入后再加载
         this._cache[key] = bitmap;
     }
     return this._cache[key];
@@ -892,6 +900,10 @@ ImageManager.clear = function() {
     this._cache = {};
 };
 
+/**
+ * 检测是否所有需要载入的图片都载入完毕
+ * @returns {boolean}
+ */
 ImageManager.isReady = function() {
     for (var key in this._cache) {
         var bitmap = this._cache[key];
@@ -1604,7 +1616,7 @@ SceneManager.run = function(sceneClass) {
     }
 };
 
-//主系统初始化
+//初始化各种子系统
 SceneManager.initialize = function() {
     this.initGraphics();
     this.checkFileAccess();
@@ -1793,6 +1805,7 @@ SceneManager.updateMain = function() {
     while (this._accumulator >= this._deltaTime) {
         //更新输入数据
         this.updateInputData();
+        //更新场景切换
         this.changeScene();
         //更新场景 貌似是将主循环分发给游戏对象的内部循环
         this.updateScene();
@@ -1805,19 +1818,24 @@ SceneManager.updateMain = function() {
 };
 
 SceneManager.changeScene = function() {
+    //是否当前需要进行场景切换
+    //是否有nextScene存在以及当前场景不在busy状态
     if (this.isSceneChanging() && !this.isCurrentSceneBusy()) {
         if (this._scene) {
             this._scene.terminate();
             this._previousClass = this._scene.constructor;
         }
+        //将nextScene交换为scene
         this._scene = this._nextScene;
         if (this._scene) {
+            //创建场景
             this._scene.create();
             this._nextScene = null;
             this._sceneStarted = false;
             this.onSceneCreate();
         }
         if (this._exiting) {
+            //终止当前场景
             this.terminate();
         }
     }
@@ -1882,9 +1900,11 @@ SceneManager.isPreviousScene = function(sceneClass) {
  */
 SceneManager.goto = function(sceneClass) {
     if (sceneClass) {
+        //设置下一个场景为传入的参数
         this._nextScene = new sceneClass();
     }
     if (this._scene) {
+        //停止当前场景
         this._scene.stop();
     }
 };
