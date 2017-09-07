@@ -12,7 +12,7 @@
 function DataManager() {
     throw new Error('This is a static class');
 }
-//数据
+//分类的数据集合
 var $dataActors       = null;
 var $dataClasses      = null;
 var $dataSkills       = null;
@@ -29,7 +29,7 @@ var $dataSystem       = null;
 var $dataMapInfos     = null;
 var $dataMap          = null;
 
-//逻辑对象
+//单例对象 各种管理器
 var $gameTemp         = null;
 var $gameSystem       = null;
 var $gameScreen       = null;
@@ -568,7 +568,7 @@ ConfigManager.readVolume = function(config, name) {
 
 //-----------------------------------------------------------------------------
 // StorageManager
-//
+//存档管理器
 // The static class that manages storage for saving game data.
 
 function StorageManager() {
@@ -1597,7 +1597,11 @@ SceneManager._screenWidth       = 816;
 SceneManager._screenHeight      = 624;
 SceneManager._boxWidth          = 816;
 SceneManager._boxHeight         = 624;
-//刷新频率
+/**
+ * 刷新频率
+ * @type {number}
+ * @private
+ */
 SceneManager._deltaTime = 1.0 / 60.0;
 //当前游戏运行时间
 SceneManager._currentTime = SceneManager._getTimeInMs();
@@ -1611,6 +1615,7 @@ SceneManager.run = function(sceneClass) {
     try {
         //初始化主系统
         this.initialize();
+        //加载该场景
         this.goto(sceneClass);
         //开启主循环
         this.requestUpdate();
@@ -1620,7 +1625,7 @@ SceneManager.run = function(sceneClass) {
 };
 
 /**
- * 初始化各种子系统
+ * 初始化SceneManager
  */
 SceneManager.initialize = function() {
     //初始化图形子系统
@@ -1632,7 +1637,9 @@ SceneManager.initialize = function() {
     //初始化输入子系统
     this.initInput();
     this.initNwjs();
+    //检测插件读取错误
     this.checkPluginErrors();
+    //设置错误监听器
     this.setupErrorHandlers();
 };
 
@@ -1744,8 +1751,9 @@ SceneManager.update = function() {
     try {
         //计时开始 他这里的更新可能是跟unity的时间间隔式(update)差不多而不是锁定时间的循环(fixupdate)
         this.tickStart();
+        //游戏循环
         this.updateMain();
-        //计时结束 计算出该循环运算的时间
+        //计时结束 然后计算出该帧所消耗的时间
         this.tickEnd();
     } catch (e) {
         this.catchException(e);
@@ -1756,11 +1764,18 @@ SceneManager.terminate = function() {
     window.close();
 };
 
+/**
+ * 错误时调用
+ * @param e
+ */
 SceneManager.onError = function(e) {
+    //控制台中打印错误
     console.error(e.message);
     console.error(e.filename, e.lineno);
     try {
+        //停止引擎
         this.stop();
+        //在画面上显示出错误
         Graphics.printError('Error', e.message);
         AudioManager.stopAll();
     } catch (e2) {
@@ -1808,9 +1823,13 @@ SceneManager.updateInputData = function() {
     TouchInput.update();
 };
 
-//主循环
+/**
+ * 主循环
+ */
 SceneManager.updateMain = function() {
 
+    //计算距离上一帧所经过的时间
+    //这里把最低帧数锁定在了40
     var newTime = this._getTimeInMs();
     var fTime =  (newTime - this._currentTime) / 1000;
     if (fTime > 0.25) fTime = 0.25;
@@ -1823,13 +1842,14 @@ SceneManager.updateMain = function() {
         this.updateInputData();
         //更新场景切换
         this.changeScene();
-        //更新场景 貌似是将主循环分发给游戏对象的内部循环
+        //更新场景 将循环事件分发给游戏对象的内部循环
         this.updateScene();
         //重置累计时间(没有使用清零值得学习..如果是我写估计就直接清零了 想想他这样写准确性高一点)
         this._accumulator -= this._deltaTime;
     }
     //渲染场景
     this.renderScene();
+    //这里为啥又来了一句？感觉好像死循环了(然而并没有不知道为什么)
     this.requestUpdate();
 };
 
@@ -1870,10 +1890,16 @@ SceneManager.updateScene = function() {
     }
 };
 
+/**
+ * 渲染scene
+ */
 SceneManager.renderScene = function() {
+    //如果当前scene加载完毕 交由底层pixi渲染器渲染
     if (this.isCurrentSceneStarted()) {
         Graphics.render(this._scene);
-    } else if (this._scene) {
+    }
+        //否则显示加载画面
+        else if (this._scene) {
         this.onSceneLoading();
     }
 };
@@ -1898,6 +1924,10 @@ SceneManager.isCurrentSceneBusy = function() {
     return this._scene && this._scene.isBusy();
 };
 
+/**
+ * 当前场景是否加载完毕
+ * @returns {null|*|boolean}
+ */
 SceneManager.isCurrentSceneStarted = function() {
     return this._scene && this._sceneStarted;
 };

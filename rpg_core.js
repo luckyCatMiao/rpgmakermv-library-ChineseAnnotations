@@ -28,9 +28,9 @@ Number.prototype.clamp = function(min, max) {
 
 /**
  * Returns a modulo value which is always positive.
+ * @param {Number} n The divisor
  *
  * @method Number.prototype.mod
- * @param {Number} n The divisor
  * @return {Number} A modulo value
  */
 Number.prototype.mod = function(n) {
@@ -823,7 +823,6 @@ Bitmap.prototype.drawCircle = function(x, y, radius, color) {
 
 /**
  * Draws the outline text to the bitmap.
- *
  * @method drawText
  * @param {String} text The text that will be drawn
  * @param {Number} x The x coordinate for the left of the text
@@ -1104,7 +1103,7 @@ Bitmap.prototype._setDirty = function() {
  */
 
 /**
- * 貌似是渲染类
+ * 渲染引擎 封装了pixi.js
  * @constructor
  */
 function Graphics() {
@@ -2360,6 +2359,7 @@ Input.clear = function() {
  * @method update
  */
 Input.update = function() {
+    //轮询手柄的输入状态
     this._pollGamepads();
     if (this._currentState[this._latestButton]) {
         this._pressedTime++;
@@ -2386,6 +2386,7 @@ Input.update = function() {
  * @return {Boolean} True if the key is pressed
  */
 Input.isPressed = function(keyName) {
+
     if (this._isEscapeCompatible(keyName) && this.isPressed('escape')) {
         return true;
     } else {
@@ -2523,19 +2524,24 @@ Input._setupEventHandlers = function() {
  * @private
  */
 Input._onKeyDown = function(event) {
+    //检测是否需要阻止默认事件
     if (this._shouldPreventDefault(event.keyCode)) {
         event.preventDefault();
     }
+    //按下numlock会重置状态
     if (event.keyCode === 144) {    // Numlock
         this.clear();
     }
+    //找到当前keycode映射的按键名
     var buttonName = this.keyMapper[event.keyCode];
     if (buttonName) {
+        //设置状态
         this._currentState[buttonName] = true;
     }
 };
 
 /**
+ * 检测是否需要取消在浏览器上该按键的默认事件
  * @static
  * @method _shouldPreventDefault
  * @param {Number} keyCode
@@ -2564,6 +2570,7 @@ Input._shouldPreventDefault = function(keyCode) {
 Input._onKeyUp = function(event) {
     var buttonName = this.keyMapper[event.keyCode];
     if (buttonName) {
+        //设置状态
         this._currentState[buttonName] = false;
     }
     if (event.keyCode === 0) {  // For QtWebEngine on OS X
@@ -2581,6 +2588,7 @@ Input._onLostFocus = function() {
 };
 
 /**
+ * 轮询手柄的输入状态
  * @static
  * @method _pollGamepads
  * @private
@@ -2600,6 +2608,7 @@ Input._pollGamepads = function() {
 };
 
 /**
+ * 更新手柄的输入状态
  * @static
  * @method _updateGamepadState
  * @param {Gamepad} gamepad
@@ -2647,6 +2656,7 @@ Input._updateDirection = function() {
 
     this._dir8 = this._makeNumpadDirection(x, y);
 
+
     if (x !== 0 && y !== 0) {
         if (this._preferredAxis === 'x') {
             y = 0;
@@ -2669,7 +2679,7 @@ Input._updateDirection = function() {
  */
 Input._signX = function() {
     var x = 0;
-
+    //同时按下左右键等于无效
     if (this.isPressed('left')) {
         x--;
     }
@@ -2792,7 +2802,6 @@ TouchInput.clear = function() {
 
 /**
  * Updates the touch data.
- *
  * @static
  * @method update
  */
@@ -3233,7 +3242,7 @@ function Sprite() {
     this.initialize.apply(this, arguments);
 }
 
-//继承于pixi渲染框架的对应类
+//继承于pixi渲染框架的Sprite类
 Sprite.prototype = Object.create(PIXI.Sprite.prototype);
 Sprite.prototype.constructor = Sprite;
 
@@ -6485,6 +6494,7 @@ ToneSprite.prototype._renderWebGL = function(renderSession) {
 
 //-----------------------------------------------------------------------------
 /**
+ * 显示对象树的根类 类似于flash的stage
  * The root object of the display tree.
  *
  * @class Stage

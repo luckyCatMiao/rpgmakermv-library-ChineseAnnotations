@@ -265,6 +265,14 @@ Window_Base.prototype.changePaintOpacity = function(enabled) {
     this.contents.paintOpacity = enabled ? 255 : this.translucentOpacity();
 };
 
+/**
+ * 渲染文本
+ * @param text
+ * @param x
+ * @param y
+ * @param maxWidth
+ * @param align
+ */
 Window_Base.prototype.drawText = function(text, x, y, maxWidth, align) {
     this.contents.drawText(text, x, y, maxWidth, this.lineHeight(), align);
 };
@@ -273,6 +281,14 @@ Window_Base.prototype.textWidth = function(text) {
     return this.contents.measureTextWidth(text);
 };
 
+
+/**
+ * 渲染文本
+ * @param text
+ * @param x
+ * @param y
+ * @returns {number}
+ */
 Window_Base.prototype.drawTextEx = function(text, x, y) {
     if (text) {
         var textState = { index: 0, x: x, y: y, left: x };
@@ -1296,7 +1312,6 @@ Window_Selectable.prototype.refresh = function() {
 //
 // The superclass of windows for selecting a command.
 //其实所谓的window都可以理解成ui控件(...刚开始被这个window的名字迷惑了),然后这个就差不多是一般UI库里面的list(可能跟java swing里的只支持文字的list更像)
-//应该是一个特化的List
 function Window_Command() {
     this.initialize.apply(this, arguments);
 }
@@ -1481,7 +1496,7 @@ Window_HorzCommand.prototype.itemTextAlign = function() {
 
 //-----------------------------------------------------------------------------
 // Window_Help
-//
+//显示帮助文本的文本框
 // The window for displaying the description of the selected item.
 
 function Window_Help() {
@@ -5733,7 +5748,10 @@ Window_BattleItem.prototype.hide = function() {
 //
 // The window for selecting New Game/Continue on the title screen.
 
-//命令list 特化的list控件,可以设置每一个选项对应一个handle(新游戏..继续游戏啥的)
+/**
+ * 命令list 特化的list控件,可以设置每一个item的点击事件对应一个回调函数
+ * @constructor
+ */
 function Window_TitleCommand() {
     this.initialize.apply(this, arguments);
 }

@@ -29,6 +29,10 @@ Scene_Base.prototype.initialize = function() {
 Scene_Base.prototype.create = function() {
 };
 
+/**
+ * 当前场景是否处在活动状态
+ * @returns {boolean}
+ */
 Scene_Base.prototype.isActive = function() {
     return this._active;
 };
@@ -42,12 +46,18 @@ Scene_Base.prototype.isReady = function() {
     return ImageManager.isReady();
 };
 
+/**
+ * 激活该场景
+ */
 Scene_Base.prototype.start = function() {
     this._active = true;
 };
 
+/**
+ * 场景更新
+ */
 Scene_Base.prototype.update = function() {
-    //更新渐变
+    //更新fade(淡入淡出)
     this.updateFade();
     //更新子级
     this.updateChildren();
@@ -55,6 +65,9 @@ Scene_Base.prototype.update = function() {
     AudioManager.checkErrors();
 };
 
+/**
+ * 停止该场景
+ */
 Scene_Base.prototype.stop = function() {
     this._active = false;
 };
@@ -70,6 +83,9 @@ Scene_Base.prototype.isBusy = function() {
 Scene_Base.prototype.terminate = function() {
 };
 
+/**
+ * 创建一个window层 专门用来放ui对象
+ */
 Scene_Base.prototype.createWindowLayer = function() {
     var width = Graphics.boxWidth;
     var height = Graphics.boxHeight;
@@ -80,6 +96,10 @@ Scene_Base.prototype.createWindowLayer = function() {
     this.addChild(this._windowLayer);
 };
 
+/**
+ * 添加window对象到windowLayer中
+ * @param window
+ */
 Scene_Base.prototype.addWindow = function(window) {
     this._windowLayer.addChild(window);
 };
@@ -109,7 +129,10 @@ Scene_Base.prototype.startFadeOut = function(duration, white) {
 };
 
 
-//貌似淡入淡出都是在最底层加一个纯色的四边形 然后开始渐变颜色来实现的
+/**
+ * 貌似淡入淡出都是在最底层加一个纯色的正方形 然后开始渐变颜色来实现的
+ * @param white
+ */
 Scene_Base.prototype.createFadeSprite = function(white) {
     if (!this._fadeSprite) {
         this._fadeSprite = new ScreenSprite();
@@ -147,8 +170,11 @@ Scene_Base.prototype.popScene = function() {
     SceneManager.pop();
 };
 
-//检查人是否都死光,是的话跳转到游戏结束场景
-//说实话 这种耦合写的太糟糕了 应该由一个第三方类来判断 然后控制跳转
+/**
+ * 检查人是否都死光,是的话跳转到游戏结束场景
+ * 说实话 这种耦合简直太糟糕了 这样的功能根本就不应该写在scene_base里
+ * 应该由一个第三方类来判断 然后控制跳转
+ */
 Scene_Base.prototype.checkGameover = function() {
     if ($gameParty.isAllDead()) {
         SceneManager.goto(Scene_Gameover);
@@ -185,7 +211,7 @@ Scene_Boot.prototype.constructor = Scene_Boot;
 
 Scene_Boot.prototype.initialize = function() {
     Scene_Base.prototype.initialize.call(this);
-    //记录启动的日期
+    //记录游戏启动的时间信息
     this._startDate = Date.now();
 };
 
@@ -195,7 +221,7 @@ Scene_Boot.prototype.create = function() {
     DataManager.loadDatabase();
     //加载游戏配置
     ConfigManager.load();
-    //加载不知道什么数据
+    //加载系统图片
     this.loadSystemImages();
 };
 
@@ -271,6 +297,9 @@ Scene_Boot.prototype.updateDocumentTitle = function() {
     document.title = $dataSystem.gameTitle;
 };
 
+/**
+ * 检查是否设置了玩家的初始位置
+ */
 Scene_Boot.prototype.checkPlayerLocation = function() {
     if ($dataSystem.startMapId === 0) {
         throw new Error('Player\'s starting position is not set');
@@ -798,16 +827,26 @@ Scene_MenuBase.prototype.updateActor = function() {
     this._actor = $gameParty.menuActor();
 };
 
+/**
+ * 创建背景 是一个模糊化的当前游戏运行截图
+ */
 Scene_MenuBase.prototype.createBackground = function() {
     this._backgroundSprite = new Sprite();
     this._backgroundSprite.bitmap = SceneManager.backgroundBitmap();
     this.addChild(this._backgroundSprite);
 };
 
+/**
+ * 设置背景透明度
+ * @param opacity
+ */
 Scene_MenuBase.prototype.setBackgroundOpacity = function(opacity) {
     this._backgroundSprite.opacity = opacity;
 };
 
+/**
+ * 创建帮助文本容器
+ */
 Scene_MenuBase.prototype.createHelpWindow = function() {
     this._helpWindow = new Window_Help();
     this.addWindow(this._helpWindow);
