@@ -1599,6 +1599,7 @@ SceneManager._boxWidth          = 816;
 SceneManager._boxHeight         = 624;
 //刷新频率
 SceneManager._deltaTime = 1.0 / 60.0;
+//当前游戏运行时间
 SceneManager._currentTime = SceneManager._getTimeInMs();
 SceneManager._accumulator = 0.0;
 
@@ -1618,21 +1619,29 @@ SceneManager.run = function(sceneClass) {
     }
 };
 
-//初始化各种子系统
+/**
+ * 初始化各种子系统
+ */
 SceneManager.initialize = function() {
+    //初始化图形子系统
     this.initGraphics();
+    //检测是否可以读写游戏文件
     this.checkFileAccess();
+    //初始化音频子系统
     this.initAudio();
+    //初始化输入子系统
     this.initInput();
     this.initNwjs();
     this.checkPluginErrors();
     this.setupErrorHandlers();
 };
 
-//初始化渲染器
+/**
+ * 初始化渲染器
+ */
 SceneManager.initGraphics = function() {
 
-    //根据当前上下文 获取渲染类型(webgl或者普通绘图)
+    //根据当前上下文 获取底层渲染机智(webgl或者canvas)
     var type = this.preferableRendererType();
     //初始化渲染器
     Graphics.initialize(this._screenWidth, this._screenHeight, type);
@@ -1645,12 +1654,17 @@ SceneManager.initGraphics = function() {
         //显示fps
         Graphics.showFps();
     }
-    //如果webgl可用 优先使用webgl作为底层渲染机制
+    //检测webgl是否真正可用
     if (type === 'webgl') {
         this.checkWebGL();
     }
 };
 
+/**
+ * 确定底层渲染方法
+ * canvas 或者webgal
+ * @returns {*}
+ */
 SceneManager.preferableRendererType = function() {
     if (Utils.isOptionValid('canvas')) {
         return 'canvas';
@@ -1684,9 +1698,9 @@ SceneManager.checkFileAccess = function() {
 };
 
 SceneManager.initAudio = function() {
-    var noAudio = Utils.isOptionValid('noaudio');
-    if (!WebAudio.initialize(noAudio) && !noAudio) {
-        throw new Error('Your browser does not support Web Audio API.');
+     var noAudio = Utils.isOptionValid('noaudio');
+        if (!WebAudio.initialize(noAudio) && !noAudio) {
+            throw newError('Your browser does not support Web Audio API.');
     }
 };
 

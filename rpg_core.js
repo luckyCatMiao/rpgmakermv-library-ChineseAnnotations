@@ -1112,6 +1112,7 @@ function Graphics() {
 }
 
 /**
+ * 初始化渲染系统
  * Initializes the graphics system.
  *
  * @static
@@ -1122,6 +1123,7 @@ function Graphics() {
  *                 'canvas', 'webgl', or 'auto'.
  */
 Graphics.initialize = function(width, height, type) {
+    //长宽 如果没有传入参数则默认为800X600
     this._width = width || 800;
     this._height = height || 600;
     this._rendererType = type || 'auto';
@@ -1613,6 +1615,7 @@ Object.defineProperty(Graphics, 'scale', {
 });
 
 /**
+ * 创建所有元素
  * @static
  * @method _createAllElements
  * @private
@@ -1644,6 +1647,7 @@ Graphics._updateAllElements = function() {
 };
 
 /**
+ * 更新实际的缩放比例
  * @static
  * @method _updateRealScale
  * @private
@@ -1652,6 +1656,7 @@ Graphics._updateRealScale = function() {
     if (this._stretchEnabled) {
         var h = window.innerWidth / this._width;
         var v = window.innerHeight / this._height;
+        //这一句莫名其妙啊，分别保存xy上的缩放不是更好？
         this._realScale = Math.min(h, v);
     } else {
         this._realScale = this._scale;
@@ -1681,6 +1686,7 @@ Graphics._defaultStretchMode = function() {
 };
 
 /**
+ * 测试画布的图层混合功能
  * @static
  * @method _testCanvasBlendModes
  * @private
@@ -1710,11 +1716,13 @@ Graphics._testCanvasBlendModes = function() {
 };
 
 /**
+ * 将所有当前html页面已经存在的dom元素显示深度设置为0
  * @static
  * @method _modifyExistingElements
  * @private
  */
 Graphics._modifyExistingElements = function() {
+
     var elements = document.getElementsByTagName('*');
     for (var i = 0; i < elements.length; i++) {
         if (elements[i].style.zIndex > 0) {
@@ -1724,13 +1732,17 @@ Graphics._modifyExistingElements = function() {
 };
 
 /**
+ * 创建出错提示的容器
  * @static
  * @method _createErrorPrinter
  * @private
  */
 Graphics._createErrorPrinter = function() {
+    //创建dom
     this._errorPrinter = document.createElement('p');
+    //设置id
     this._errorPrinter.id = 'ErrorPrinter';
+    //更新
     this._updateErrorPrinter();
     document.body.appendChild(this._errorPrinter);
 };
@@ -1741,16 +1753,23 @@ Graphics._createErrorPrinter = function() {
  * @private
  */
 Graphics._updateErrorPrinter = function() {
+    //设置长宽
     this._errorPrinter.width = this._width * 0.9;
     this._errorPrinter.height = 40;
+    //内部元素居中
     this._errorPrinter.style.textAlign = 'center';
+    //阴影
     this._errorPrinter.style.textShadow = '1px 1px 3px #000';
+    //文字大小
     this._errorPrinter.style.fontSize = '20px';
+    //深度
     this._errorPrinter.style.zIndex = 99;
+    //在整个页面中居中
     this._centerElement(this._errorPrinter);
 };
 
 /**
+ * 创建渲染画布的容器
  * @static
  * @method _createCanvas
  * @private
@@ -1763,6 +1782,7 @@ Graphics._createCanvas = function() {
 };
 
 /**
+ * 更新画布容器
  * @static
  * @method _updateCanvas
  * @private
@@ -1775,6 +1795,7 @@ Graphics._updateCanvas = function() {
 };
 
 /**
+ * 创建视频元素的容器
  * @static
  * @method _createVideo
  * @private
@@ -1800,6 +1821,7 @@ Graphics._updateVideo = function() {
 };
 
 /**
+ * 创建上层画布的容器
  * @static
  * @method _createUpperCanvas
  * @private
@@ -1853,6 +1875,7 @@ Graphics._paintUpperCanvas = function() {
 };
 
 /**
+ * 创建渲染器 底层使用pixi实现
  * @static
  * @method _createRenderer
  * @private
@@ -1891,6 +1914,7 @@ Graphics._updateRenderer = function() {
 };
 
 /**
+ * 创建fps计数器的容器
  * @static
  * @method _createFPSMeter
  * @private
@@ -1947,6 +1971,7 @@ Graphics._createGameFontLoader = function() {
 };
 
 /**
+ * 创建字体加载器
  * @static
  * @method _createFontLoader
  * @param {String} name
@@ -1955,6 +1980,7 @@ Graphics._createGameFontLoader = function() {
 Graphics._createFontLoader = function(name) {
     var div = document.createElement('div');
     var text = document.createTextNode('.');
+    //此时加载了实际的字体文件
     div.style.fontFamily = name;
     div.style.fontSize = '0px';
     div.style.color = 'transparent';
@@ -1969,6 +1995,7 @@ Graphics._createFontLoader = function(name) {
 };
 
 /**
+ * 居中一个dom元素
  * @static
  * @method _centerElement
  * @param {HTMLElement} element
@@ -1988,6 +2015,7 @@ Graphics._centerElement = function(element) {
 };
 
 /**
+ * 设置文本不可选择
  * @static
  * @method _disableTextSelection
  * @private
@@ -2001,6 +2029,7 @@ Graphics._disableTextSelection = function() {
 };
 
 /**
+ * 禁用html原本的上下文菜单功能 即鼠标右键后将不会再弹出菜单
  * @static
  * @method _disableContextMenu
  * @private
@@ -2076,6 +2105,7 @@ Graphics._isVideoVisible = function() {
 };
 
 /**
+ * 设置两个事件监听器 window对象的resize事件和 document的keydown事件
  * @static
  * @method _setupEventHandlers
  * @private
@@ -2225,8 +2255,11 @@ function Input() {
  * @method initialize
  */
 Input.initialize = function() {
+    //初始化变量
     this.clear();
+    //不太清楚干啥 貌似是检测是不是运行在nw.js上
     this._wrapNwjsAlert();
+    //设置监听器  keydown keyup
     this._setupEventHandlers();
 };
 
@@ -2707,6 +2740,7 @@ function TouchInput() {
  */
 TouchInput.initialize = function() {
     this.clear();
+    //设置touch事件监听
     this._setupEventHandlers();
 };
 
