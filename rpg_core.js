@@ -703,6 +703,8 @@ Bitmap.prototype.getPixel = function(x, y) {
     for (var i = 0; i < 3; i++) {
         result += data[i].toString(16).padZero(2);
     }
+
+  
     return result;
 };
 
@@ -5138,7 +5140,6 @@ Object.defineProperty(Window.prototype, 'contents', {
 
 /**
  * The width of the window in pixels.
- *
  * @property width
  * @type Number
  */

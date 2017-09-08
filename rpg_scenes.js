@@ -869,7 +869,7 @@ Scene_MenuBase.prototype.onActorChange = function() {
 
 //-----------------------------------------------------------------------------
 // Scene_Menu
-//
+//  菜单场景 (默认按ESC呼出)
 // The scene class of the menu screen.
 
 function Scene_Menu() {
@@ -885,8 +885,11 @@ Scene_Menu.prototype.initialize = function() {
 
 Scene_Menu.prototype.create = function() {
     Scene_MenuBase.prototype.create.call(this);
+    //创建左侧列表
     this.createCommandWindow();
+    //创建显示金钱的文本框
     this.createGoldWindow();
+    //创建右侧状态框
     this.createStatusWindow();
 };
 

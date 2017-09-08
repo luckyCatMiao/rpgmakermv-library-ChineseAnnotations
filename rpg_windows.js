@@ -25,7 +25,7 @@ Window_Base.prototype.initialize = function(x, y, width, height) {
     Window.prototype.initialize.call(this);
     //加载窗体皮肤
     this.loadWindowskin();
-    //移动到指定位置
+    //设置到指定位置
     this.move(x, y, width, height);
     //更新内边距
     this.updatePadding();
@@ -249,6 +249,10 @@ Window_Base.prototype.tpCostColor = function() {
     return this.textColor(29);
 };
 
+/**
+ * 填充颜色为窗口皮肤的(120,120)处像素颜色
+ * @returns {String}
+ */
 Window_Base.prototype.pendingColor = function() {
     return this.windowskin.getPixel(120, 120);
 };
@@ -632,6 +636,14 @@ Window_Base.prototype.drawItemName = function(item, x, y, width) {
     }
 };
 
+/**
+ * 画出当前金钱 我也是醉了 搞一个这样的方法在基类里 明明可以再分一个类
+ * @param value 当前持有的货币量
+ * @param unit 货币单位的字符串表示
+ * @param x
+ * @param y
+ * @param width
+ */
 Window_Base.prototype.drawCurrencyValue = function(value, unit, x, y, width) {
     var unitWidth = Math.min(80, this.textWidth(unit));
     this.resetTextColor();
@@ -812,9 +824,14 @@ Window_Selectable.prototype.deactivate = function() {
     this.reselect();
 };
 
+/**
+ * 选择某项
+ * @param index
+ */
 Window_Selectable.prototype.select = function(index) {
     this._index = index;
     this._stayCount = 0;
+    //如果该项没有显示则滚动到该项
     this.ensureCursorVisible();
     this.updateCursor();
     this.callUpdateHelp();
@@ -828,6 +845,10 @@ Window_Selectable.prototype.reselect = function() {
     this.select(this._index);
 };
 
+/**
+ * 当前选择的行 index除掉列数后求整
+ * @returns {number}
+ */
 Window_Selectable.prototype.row = function() {
     return Math.floor(this.index() / this.maxCols());
 };
@@ -878,6 +899,11 @@ Window_Selectable.prototype.topIndex = function() {
     return this.topRow() * this.maxCols();
 };
 
+/**
+ * 算出index对应item的绘制rect
+ * @param index
+ * @returns {Rectangle}
+ */
 Window_Selectable.prototype.itemRect = function(index) {
     var rect = new Rectangle();
     var maxCols = this.maxCols();
@@ -889,7 +915,9 @@ Window_Selectable.prototype.itemRect = function(index) {
 };
 
 Window_Selectable.prototype.itemRectForText = function(index) {
+    //计算item的rect
     var rect = this.itemRect(index);
+    //加上textPadding
     rect.x += this.textPadding();
     rect.width -= this.textPadding() * 2;
     return rect;
@@ -1224,12 +1252,18 @@ Window_Selectable.prototype.updateInputData = function() {
     TouchInput.update();
 };
 
+/**
+ * 更新选中的item的选中标记
+ */
 Window_Selectable.prototype.updateCursor = function() {
+    //如果全选
     if (this._cursorAll) {
         var allRowsHeight = this.maxRows() * this.itemHeight();
         this.setCursorRect(0, 0, this.contents.width, allRowsHeight);
         this.setTopRow(0);
-    } else if (this.isCursorVisible()) {
+    }
+    //如果当前选中行可见
+    else if (this.isCursorVisible()) {
         var rect = this.itemRect(this.index());
         this.setCursorRect(rect.x, rect.y, rect.width, rect.height);
     } else {
@@ -1242,11 +1276,18 @@ Window_Selectable.prototype.isCursorVisible = function() {
     return row >= this.topRow() && row <= this.bottomRow();
 };
 
+/**
+ * 保证当前的选择可见(例如scroll面板不能显示所有项,则该方法会滚动到其位置)
+ */
 Window_Selectable.prototype.ensureCursorVisible = function() {
+    //获取当前所在行
     var row = this.row();
+    //如果row在当前显示的最上面的外面 则设置row为当前显示的最上面
     if (row < this.topRow()) {
         this.setTopRow(row);
-    } else if (row > this.bottomRow()) {
+    }
+    //如果row在当前显示的最下面的外面 则设置row为当前显示的最下面
+    else if (row > this.bottomRow()) {
         this.setBottomRow(row);
     }
 };
@@ -1300,6 +1341,9 @@ Window_Selectable.prototype.redrawCurrentItem = function() {
     this.redrawItem(this.index());
 };
 
+/**
+ * 重绘所有item
+ */
 Window_Selectable.prototype.refresh = function() {
     if (this.contents) {
         this.contents.clear();
@@ -1433,10 +1477,15 @@ Window_Command.prototype.selectExt = function(ext) {
 };
 
 Window_Command.prototype.drawItem = function(index) {
+    //获取item Rect
     var rect = this.itemRectForText(index);
+    //获取对齐方式
     var align = this.itemTextAlign();
+    //重置text颜色
     this.resetTextColor();
+    //根据该项是否可用来选择不同透明度
     this.changePaintOpacity(this.isCommandEnabled(index));
+    //画出text
     this.drawText(this.commandName(index), rect.x, rect.y, rect.width, align);
 };
 
@@ -1535,7 +1584,7 @@ Window_Help.prototype.refresh = function() {
 
 //-----------------------------------------------------------------------------
 // Window_Gold
-//
+// 不知道为啥不单独搞个文本框控件 这玩意还直接继承base了
 // The window for displaying the party's gold.
 
 function Window_Gold() {
@@ -1612,6 +1661,7 @@ Window_MenuCommand.prototype.numVisibleRows = function() {
 };
 
 Window_MenuCommand.prototype.makeCommandList = function() {
+    //添加commond
     this.addMainCommands();
     this.addFormationCommand();
     this.addOriginalCommands();
@@ -1621,6 +1671,7 @@ Window_MenuCommand.prototype.makeCommandList = function() {
 };
 
 Window_MenuCommand.prototype.addMainCommands = function() {
+    //检查主命令是否可用 只有在队伍人数>0才可用
     var enabled = this.areMainCommandsEnabled();
     if (this.needsCommand('item')) {
         this.addCommand(TextManager.item, 'item', enabled);
@@ -1749,15 +1800,26 @@ Window_MenuStatus.prototype.maxItems = function() {
     return $gameParty.size();
 };
 
+/**
+ * 返回每项的高度 窗口高度减去内边距后除掉最大可显示人数
+ * @returns {number}
+ */
 Window_MenuStatus.prototype.itemHeight = function() {
     var clientHeight = this.height - this.padding * 2;
     return Math.floor(clientHeight / this.numVisibleRows());
 };
 
+/**
+ * 最大可显示人数
+ * @returns {number}
+ */
 Window_MenuStatus.prototype.numVisibleRows = function() {
     return 4;
 };
 
+/**
+ * 加载人物头像
+ */
 Window_MenuStatus.prototype.loadImages = function() {
     $gameParty.members().forEach(function(actor) {
         ImageManager.loadFace(actor.faceName());
@@ -1765,12 +1827,16 @@ Window_MenuStatus.prototype.loadImages = function() {
 };
 
 Window_MenuStatus.prototype.drawItem = function(index) {
+    //画出背景 实际上没效果
     this.drawItemBackground(index);
+    //画出头像
     this.drawItemImage(index);
+    //画出人物状态
     this.drawItemStatus(index);
 };
 
 Window_MenuStatus.prototype.drawItemBackground = function(index) {
+    //因为_pendingIndex初始值是-1 所以其实没效果
     if (index === this._pendingIndex) {
         var rect = this.itemRect(index);
         var color = this.pendingColor();
