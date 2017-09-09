@@ -2,10 +2,10 @@
 // rpg_managers.js v1.1.0
 //=============================================================================
 
-//该文件包含了游戏运行的一些主系统 如资源加载查找 音频主控制 数据本地化(存档) 等等
+//
 //-----------------------------------------------------------------------------
 // DataManager
-//
+// 数据文件加载器  加载完成之后就分发数据给不同的子管理器
 // The static class that manages the database and game objects.
 
 //数据管理器
@@ -82,6 +82,11 @@ DataManager.loadDatabase = function() {
     }
 };
 
+/**
+ * 加载数据文件
+ * @param name
+ * @param src
+ */
 DataManager.loadDataFile = function(name, src) {
     var xhr = new XMLHttpRequest();
     var url = 'data/' + src;
@@ -93,13 +98,20 @@ DataManager.loadDataFile = function(name, src) {
             DataManager.onLoad(window[name]);
         }
     };
+    //如果错误的话将该url设置为_errorUrl
     xhr.onerror = function() {
         DataManager._errorUrl = DataManager._errorUrl || url;
     };
+
+    //覆盖之前的数据
     window[name] = null;
     xhr.send();
 };
 
+/**
+ * 是否加载完成
+ * @returns {boolean}
+ */
 DataManager.isDatabaseLoaded = function() {
     this.checkError();
     for (var i = 0; i < this._databaseFiles.length; i++) {
@@ -110,6 +122,10 @@ DataManager.isDatabaseLoaded = function() {
     return true;
 };
 
+/**
+ * 加载地图数据
+ * @param mapId
+ */
 DataManager.loadMapData = function(mapId) {
     if (mapId > 0) {
         var filename = 'Map%1.json'.format(mapId.padZero(3));
@@ -133,6 +149,10 @@ DataManager.isMapLoaded = function() {
     return !!$dataMap;
 };
 
+/**
+ * 处理加载进来的数据文件
+ * @param object
+ */
 DataManager.onLoad = function(object) {
     var array;
     if (object === $dataMap) {
@@ -151,6 +171,10 @@ DataManager.onLoad = function(object) {
     }
 };
 
+/**
+ * 抽取元数据
+ * @param data
+ */
 DataManager.extractMetadata = function(data) {
     var re = /<([^<>:]+)(:?)([^>]*)>/g;
     data.meta = {};

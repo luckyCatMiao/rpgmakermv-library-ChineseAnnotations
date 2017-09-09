@@ -49,6 +49,10 @@ Window_Base.prototype.lineHeight = function() {
     return 36;
 };
 
+/**
+ * 获得标准字体
+ * @returns {*}
+ */
 Window_Base.prototype.standardFontFace = function() {
     if ($gameSystem.isChinese()) {
         return 'SimHei, Heiti TC, sans-serif';
@@ -75,6 +79,9 @@ Window_Base.prototype.standardBackOpacity = function() {
     return 192;
 };
 
+/**
+ * 加载窗体皮肤
+ */
 Window_Base.prototype.loadWindowskin = function() {
     this.windowskin = ImageManager.loadSystem('Window');
 };
@@ -126,6 +133,7 @@ Window_Base.prototype.update = function() {
     this.updateClose();
     this.updateBackgroundDimmer();
 };
+
 
 Window_Base.prototype.updateOpen = function() {
     if (this._opening) {
@@ -5847,6 +5855,9 @@ Window_TitleCommand.prototype.updatePlacement = function() {
     this.y = Graphics.boxHeight - this.height - 96;
 };
 
+/**
+ * 添加命令
+ */
 Window_TitleCommand.prototype.makeCommandList = function() {
     this.addCommand(TextManager.newGame,   'newGame');
     this.addCommand(TextManager.continue_, 'continue', this.isContinueEnabled());
