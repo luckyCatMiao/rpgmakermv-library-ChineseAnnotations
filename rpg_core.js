@@ -2494,6 +2494,7 @@ Object.defineProperty(Input, 'date', {
  * @static
  * @method _wrapNwjsAlert
  * @private
+ * 如果当前运行平台是nw.js(一个js的桌面应用环境 基于node.js)，则将默认的window.alert方法包装一下
  */
 Input._wrapNwjsAlert = function() {
     if (Utils.isNwjs()) {
@@ -2512,6 +2513,7 @@ Input._wrapNwjsAlert = function() {
  * @static
  * @method _setupEventHandlers
  * @private
+ * 设置基础的事件监听器。需要根据这些事件来设置按键的状态
  */
 Input._setupEventHandlers = function() {
     document.addEventListener('keydown', this._onKeyDown.bind(this));
@@ -2526,8 +2528,9 @@ Input._setupEventHandlers = function() {
  * @private
  */
 Input._onKeyDown = function(event) {
-    //检测是否需要阻止默认事件
+    //检测是否需要阻止该键的默认事件(例如上下键默认会滚动网页)
     if (this._shouldPreventDefault(event.keyCode)) {
+        //阻止默认事件
         event.preventDefault();
     }
     //按下numlock会重置状态
@@ -2590,12 +2593,13 @@ Input._onLostFocus = function() {
 };
 
 /**
- * 轮询手柄的输入状态
+ * 更新手柄的输入状态
  * @static
  * @method _pollGamepads
  * @private
  */
 Input._pollGamepads = function() {
+    //分别获取多个手柄的输入状态(话说插多个手柄玩rm是什么情况XD)
     if (navigator.getGamepads) {
         var gamepads = navigator.getGamepads();
         if (gamepads) {
