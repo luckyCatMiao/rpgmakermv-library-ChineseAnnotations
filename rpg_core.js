@@ -2284,7 +2284,7 @@ Input.keyRepeatInterval = 6;
 
 /**
  * A hash table to convert from a virtual key code to a mapped key name.
- *
+ *一组按键名到实际键盘keycode的映射值
  * @static
  * @property keyMapper
  * @type Object
@@ -2381,7 +2381,7 @@ Input.update = function() {
 
 /**
  * Checks whether a key is currently pressed down.
- *
+ *检测是否某键按下
  * @static
  * @method isPressed
  * @param {String} keyName The mapped name of the key
@@ -2398,7 +2398,7 @@ Input.isPressed = function(keyName) {
 
 /**
  * Checks whether a key is just pressed.
- *
+ *检测一个键是否刚刚按下
  * @static
  * @method isTriggered
  * @param {String} keyName The mapped name of the key
@@ -2414,7 +2414,7 @@ Input.isTriggered = function(keyName) {
 
 /**
  * Checks whether a key is just pressed or a key repeat occurred.
- *
+ *检测某按键是否持续按下(持续按下的判定标准为该键按住持续的帧数大于keyRepeatWait)。
  * @static
  * @method isRepeated
  * @param {String} keyName The mapped name of the key
@@ -2433,7 +2433,7 @@ Input.isRepeated = function(keyName) {
 
 /**
  * Checks whether a key is kept depressed.
- *
+ * 检测某键是否长按
  * @static
  * @method isLongPressed
  * @param {String} keyName The mapped name of the key
@@ -2657,12 +2657,15 @@ Input._updateGamepadState = function(gamepad) {
  * @private
  */
 Input._updateDirection = function() {
+    //获取x轴按下状态
     var x = this._signX();
+    //获取y轴按下状态
     var y = this._signY();
 
+    //映射到八方向
     this._dir8 = this._makeNumpadDirection(x, y);
 
-
+    //因为四方向只能在x轴或y轴上移动，所以这里如果xy同时按下，则必须忽视一个轴的输入
     if (x !== 0 && y !== 0) {
         if (this._preferredAxis === 'x') {
             y = 0;
@@ -2675,6 +2678,7 @@ Input._updateDirection = function() {
         this._preferredAxis = 'x';
     }
 
+    //映射到四方向
     this._dir4 = this._makeNumpadDirection(x, y);
 };
 
