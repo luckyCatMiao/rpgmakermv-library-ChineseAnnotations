@@ -2766,7 +2766,7 @@ TouchInput.initialize = function() {
 
 /**
  * The wait time of the pseudo key repeat in frames.
- *
+ *延迟
  * @static
  * @property keyRepeatWait
  * @type Number
