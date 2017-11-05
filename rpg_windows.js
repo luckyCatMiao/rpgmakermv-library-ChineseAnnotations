@@ -8,10 +8,10 @@
 // The superclass of all windows within the game.
 
 
-//ui类库
+
 
 /**
- * ui基类
+ *
  * @constructor
  */
 function Window_Base() {
@@ -753,7 +753,7 @@ Window_Base.prototype.canvasToLocalY = function(y) {
 
 //-----------------------------------------------------------------------------
 // Window_Selectable
-//
+//相当于list
 // The window class with cursor movement and scroll functions.
 
 function Window_Selectable() {
@@ -948,6 +948,11 @@ Window_Selectable.prototype.hideHelpWindow = function() {
     }
 };
 
+/**
+ * 设置某项的点击监听
+ * @param symbol
+ * @param method
+ */
 Window_Selectable.prototype.setHandler = function(symbol, method) {
     this._handlers[symbol] = method;
 };
@@ -1361,9 +1366,9 @@ Window_Selectable.prototype.refresh = function() {
 
 //-----------------------------------------------------------------------------
 // Window_Command
-//
+// 增加了一些特殊支持的list
 // The superclass of windows for selecting a command.
-//其实所谓的window都可以理解成ui控件(...刚开始被这个window的名字迷惑了),然后这个就差不多是一般UI库里面的list(可能跟java swing里的只支持文字的list更像)
+
 function Window_Command() {
     this.initialize.apply(this, arguments);
 }

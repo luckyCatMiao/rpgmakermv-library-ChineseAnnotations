@@ -2762,6 +2762,7 @@ TouchInput.initialize = function() {
     this.clear();
     //设置touch事件监听
     this._setupEventHandlers();
+
 };
 
 /**
@@ -2831,6 +2832,7 @@ TouchInput.update = function() {
     if (this.isPressed()) {
         this._pressedTime++;
     }
+
 };
 
 /**
@@ -5034,7 +5036,10 @@ ScreenSprite.prototype._renderCanvas = function(renderSession) {
 //-----------------------------------------------------------------------------
 /**
  * The window in the game.
- *
+ *UI结构的基础类，但是和其他ui的常规ui基类不同,该类已经内部包含了多个显示对象，
+ * 例如back contend cursor 可以说是专门为rpg类型的窗口设计的基类，
+ * 所以如果要从底层重写ui(如需要单独的button,label之类的)，因为渲染效率问题，最好直接跳过该类
+ * 直接从pixi的container开始写，或者继承pixi的其他类例如text
  * @class Window
  * @constructor
  */
@@ -5042,6 +5047,8 @@ function Window() {
     this.initialize.apply(this, arguments);
 }
 
+//继承pixi的DisplayObjectContainer,一个单纯的容器类
+//和javafx 的region应该类似
 Window.prototype = Object.create(PIXI.DisplayObjectContainer.prototype);
 Window.prototype.constructor = Window;
 
@@ -5148,6 +5155,7 @@ Object.defineProperty(Window.prototype, 'contents', {
 
 /**
  * The width of the window in pixels.
+ * ui的宽度
  * @property width
  * @type Number
  */
@@ -5164,7 +5172,7 @@ Object.defineProperty(Window.prototype, 'width', {
 
 /**
  * The height of the window in pixels.
- *
+ *ui的高度
  * @property height
  * @type Number
  */
@@ -5181,7 +5189,7 @@ Object.defineProperty(Window.prototype, 'height', {
 
 /**
  * The size of the padding between the frame and contents.
- *
+ *ui的内边距
  * @property padding
  * @type Number
  */
@@ -5198,7 +5206,7 @@ Object.defineProperty(Window.prototype, 'padding', {
 
 /**
  * The size of the margin for the window background.
- *
+ *ui的外边距
  * @property margin
  * @type Number
  */
@@ -5215,7 +5223,7 @@ Object.defineProperty(Window.prototype, 'margin', {
 
 /**
  * The opacity of the window without contents (0 to 255).
- *
+ *  ui的透明度
  * @property opacity
  * @type Number
  */
@@ -5231,7 +5239,7 @@ Object.defineProperty(Window.prototype, 'opacity', {
 
 /**
  * The opacity of the window background (0 to 255).
- *
+ * ui的透明度
  * @property backOpacity
  * @type Number
  */
@@ -5247,7 +5255,7 @@ Object.defineProperty(Window.prototype, 'backOpacity', {
 
 /**
  * The opacity of the window contents (0 to 255).
- *
+ *  ui内容的透明度
  * @property contentsOpacity
  * @type Number
  */
@@ -5263,7 +5271,7 @@ Object.defineProperty(Window.prototype, 'contentsOpacity', {
 
 /**
  * The openness of the window (0 to 255).
- *
+ * 窗口的打开程度 0~255
  * @property openness
  * @type Number
  */
@@ -5283,7 +5291,7 @@ Object.defineProperty(Window.prototype, 'openness', {
 
 /**
  * Updates the window for each frame.
- *
+ *更新子级
  * @method update
  */
 Window.prototype.update = function() {

@@ -3,5 +3,5 @@
 var $plugins =
 [
 {"name":"changeTitlePosition","status":false,"description":"","parameters":{}},
-{"name":"AltMenuScreen","status":true,"description":"Alternative menu screen layout.","parameters":{}}
+{"name":"AltMenuScreen","status":false,"description":"Alternative menu screen layout.","parameters":{}}
 ];
