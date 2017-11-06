@@ -11,7 +11,6 @@
 
 
 /**
- *
  * @constructor
  */
 function Window_Base() {
