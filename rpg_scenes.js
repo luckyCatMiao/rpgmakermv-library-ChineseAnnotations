@@ -898,6 +898,9 @@ Scene_Menu.prototype.start = function() {
     this._statusWindow.refresh();
 };
 
+/**
+ * 添加命令对应的处理器
+ */
 Scene_Menu.prototype.createCommandWindow = function() {
     this._commandWindow = new Window_MenuCommand(0, 0);
     this._commandWindow.setHandler('item',      this.commandItem.bind(this));
