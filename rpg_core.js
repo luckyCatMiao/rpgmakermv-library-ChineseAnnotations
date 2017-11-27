@@ -3383,7 +3383,7 @@ Sprite.prototype.move = function(x, y) {
 
 /**
  * Sets the rectagle of the bitmap that the sprite displays.
- *
+ *设置sprite的方形遮罩大小
  * @method setFrame
  * @param {Number} x The x coordinate of the frame
  * @param {Number} y The y coordinate of the frame
@@ -3430,7 +3430,7 @@ Sprite.prototype.setBlendColor = function(color) {
 
 /**
  * Gets the color tone for the sprite.
- *
+ *获取色调
  * @method getColorTone
  * @return {Array} The color tone [r, g, b, gray]
  */
@@ -3440,14 +3440,16 @@ Sprite.prototype.getColorTone = function() {
 
 /**
  * Sets the color tone for the sprite.
- *
+ *设置色调
  * @method setColorTone
  * @param {Array} tone The color tone [r, g, b, gray]
  */
 Sprite.prototype.setColorTone = function(tone) {
+    //必须是数组类型
     if (!(tone instanceof Array)) {
         throw new Error('Argument must be an array');
     }
+    //如果传入的色调和现在的色调不相等，则刷新
     if (!this._colorTone.equals(tone)) {
         this._colorTone = tone.clone();
         this._refresh();
@@ -3469,19 +3471,24 @@ Sprite.prototype._onBitmapLoad = function() {
 /**
  * @method _refresh
  * @private
+ * 刷新渲染
  */
 Sprite.prototype._refresh = function() {
+    //数值求整，应该是为了运算效率的优化
     var frameX = Math.floor(this._frame.x);
     var frameY = Math.floor(this._frame.y);
     var frameW = Math.floor(this._frame.width);
     var frameH = Math.floor(this._frame.height);
+    //存在贴图的话 取贴图的宽高 否则为0
     var bitmapW = this._bitmap ? this._bitmap.width : 0;
     var bitmapH = this._bitmap ? this._bitmap.height : 0;
+    //遮罩宽高不能大于实际贴图宽高
     var realX = frameX.clamp(0, bitmapW);
     var realY = frameY.clamp(0, bitmapH);
     var realW = (frameW - realX + frameX).clamp(0, bitmapW - realX);
     var realH = (frameH - realY + frameY).clamp(0, bitmapH - realY);
 
+    //赋值到实例变量
     this._realFrame.x = realX;
     this._realFrame.y = realY;
     this._realFrame.width = realW;
@@ -3489,10 +3496,15 @@ Sprite.prototype._refresh = function() {
     this._offset.x = realX - frameX;
     this._offset.y = realY - frameY;
 
+    //如果存在贴图
     if (realW > 0 && realH > 0) {
+        //如果需要调色
         if (this._needsTint()) {
+            //创建调色层
             this._createTinter(realW, realH);
+            //运行调色算法
             this._executeTint(realX, realY, realW, realH);
+            //设置为脏
             this._tintTexture.dirty();
             this.texture.baseTexture = this._tintTexture;
             this.texture.setFrame(new Rectangle(0, 0, realW, realH));
@@ -3529,6 +3541,7 @@ Sprite.prototype._isInBitmapRect = function(x, y, w, h) {
  * @method _needsTint
  * @return {Boolean}
  * @private
+ * 是否需要调色，调色向量中任意一个分量>0即返回true(全是0对色调没有影响)
  */
 Sprite.prototype._needsTint = function() {
     var tone = this._colorTone;
@@ -3540,6 +3553,7 @@ Sprite.prototype._needsTint = function() {
  * @param {Number} w
  * @param {Number} h
  * @private
+ * 创建调色层
  */
 Sprite.prototype._createTinter = function(w, h) {
     if (!this._canvas) {
@@ -3566,6 +3580,7 @@ Sprite.prototype._createTinter = function(w, h) {
  * @param {Number} w
  * @param {Number} h
  * @private
+ * 调色算法，只是对底层pixi调色算法的粗略封装
  */
 Sprite.prototype._executeTint = function(x, y, w, h) {
     var context = this._context;
