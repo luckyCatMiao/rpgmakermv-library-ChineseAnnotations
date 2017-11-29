@@ -11,12 +11,13 @@
  */
 //js扩展类
 function JsExtensions() {
+
     throw new Error('This is not a class');
 }
 
 /**
  * Returns a number whose value is limited to the given range.
- *
+ *限制一个数的范围在min 和max之间
  * @method Number.prototype.clamp
  * @param {Number} min The lower boundary
  * @param {Number} max The upper boundary
