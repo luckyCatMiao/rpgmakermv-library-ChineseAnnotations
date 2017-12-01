@@ -36,6 +36,7 @@ Sprite_Base.prototype.hide = function() {
     this.updateVisibility();
 };
 
+
 Sprite_Base.prototype.show = function() {
     this._hiding = false;
     this.updateVisibility();
