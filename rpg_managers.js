@@ -1594,7 +1594,8 @@ Object.defineProperties(TextManager, {
 
 //-----------------------------------------------------------------------------
 // SceneManager
-//
+//场景管理器，内部用一个栈保存了场景切换历史，可以在该栈中向前向后移动进行场景切换
+//压栈进入新场景，退栈来退出一个场景
 // The static class that manages scene transitions.
 
 function SceneManager() {
@@ -1609,14 +1610,19 @@ SceneManager._getTimeInMs = function() {
     return performance.now();
 };
 
+//当前场景
 SceneManager._scene             = null;
+//下一个场景，内部使用轮询来进行当前场景和下一个场景的切换
 SceneManager._nextScene         = null;
+//场景栈
 SceneManager._stack             = [];
+//是否停止
 SceneManager._stopped           = false;
 SceneManager._sceneStarted      = false;
 SceneManager._exiting           = false;
 SceneManager._previousClass     = null;
 SceneManager._backgroundBitmap  = null;
+//宽高数据
 SceneManager._screenWidth       = 816;
 SceneManager._screenHeight      = 624;
 SceneManager._boxWidth          = 816;
@@ -1650,6 +1656,7 @@ SceneManager.run = function(sceneClass) {
 
 /**
  * 初始化SceneManager
+ * （其实他这里的子系统层级架构分的有问题）
  */
 SceneManager.initialize = function() {
     //初始化图形子系统
@@ -1729,17 +1736,22 @@ SceneManager.checkFileAccess = function() {
 };
 
 SceneManager.initAudio = function() {
+    //检测是否打开声音选项
      var noAudio = Utils.isOptionValid('noaudio');
+     //检测浏览器是否支持web audio api
         if (!WebAudio.initialize(noAudio) && !noAudio) {
             throw newError('Your browser does not support Web Audio API.');
     }
 };
 
 SceneManager.initInput = function() {
+    //初始化键盘输入子系统(包含了手柄输入的检测)
     Input.initialize();
+    //初始化触摸输入子系统(手机，平板之类的)
     TouchInput.initialize();
 };
 
+//nwjs 是一个nodejs上跑的js桌面应用环境，如果游戏是本地运行而不是在浏览器上运行，需要该库的支持
 SceneManager.initNwjs = function() {
     if (Utils.isNwjs()) {
         var gui = require('nw.gui');

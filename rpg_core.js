@@ -189,30 +189,33 @@ Utils.isOptionValid = function(name) {
 
 /**
  * Checks whether the platform is NW.js.
- *
+ *检测当前平台是不是nw.js
  * @static
  * @method isNwjs
  * @return {Boolean} True if the platform is NW.js
  */
 Utils.isNwjs = function() {
+    //根据一些平台特征进行检测 (在nw.js平台上require是一个全局方法而process是一个全局对象)
     return typeof require === 'function' && typeof process === 'object';
 };
 
 /**
  * Checks whether the platform is a mobile device.
- *
+ *检测当前平台是不是移动设备
  * @static
  * @method isMobileDevice
  * @return {Boolean} True if the platform is a mobile device
  */
 Utils.isMobileDevice = function() {
+    //正则匹配，列举了市面上常见的移动设备
     var r = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
+    //通过navigator.userAgent进行匹配，navigator.userAgent会返回设备描述
     return !!navigator.userAgent.match(r);
 };
 
 /**
  * Checks whether the browser is Mobile Safari.
- *
+ * 检测当前平台是不是MobileSafari
  * @static
  * @method isMobileSafari
  * @return {Boolean} True if the browser is Mobile Safari
@@ -237,12 +240,13 @@ Utils.isAndroidChrome = function() {
 
 /**
  * Checks whether the browser can read files in the game folder.
- *
+ *检测是否可以读文件
  * @static
  * @method canReadGameFiles
  * @return {Boolean} True if the browser can read files in the game folder
  */
 Utils.canReadGameFiles = function() {
+    //这里采用的做法是取最后一个script元素的源地址，然后请求他
     var scripts = document.getElementsByTagName('script');
     var lastScript = scripts[scripts.length - 1];
     var xhr = new XMLHttpRequest();
@@ -258,7 +262,7 @@ Utils.canReadGameFiles = function() {
 
 /**
  * Makes a CSS color string from RGB values.
- *
+ *  rgb分量[0,255]到css颜色表达式的转换
  * @static
  * @method rgbToCssColor
  * @param {Number} r The red value in the range (0, 255)
@@ -276,6 +280,7 @@ Utils.rgbToCssColor = function(r, g, b) {
 //-----------------------------------------------------------------------------
 /**
  * The point class.
+ * 点类
  *
  * @class Point
  * @constructor
@@ -286,6 +291,8 @@ function Point() {
     this.initialize.apply(this, arguments);
 }
 
+//直接继承了pixi的点类，然后没做什么改动
+//不过pixi的类是有层级分布的，它直接给人搞成plain了，无语
 Point.prototype = Object.create(PIXI.Point.prototype);
 Point.prototype.constructor = Point;
 
@@ -310,7 +317,7 @@ Point.prototype.initialize = function(x, y) {
 //-----------------------------------------------------------------------------
 /**
  * The rectangle class.
- *
+ *  矩形类，直接继承pixi对应的矩形
  * @class Rectangle
  * @constructor
  * @param {Number} x The x coordinate for the upper-left corner
