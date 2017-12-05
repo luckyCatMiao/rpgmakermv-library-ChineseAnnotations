@@ -462,6 +462,7 @@ Bitmap.load = function(url) {
     var bitmap = new Bitmap();
     bitmap._image = new Image();
     bitmap._image.src = url;
+    //绑定两个事件
     bitmap._image.onload = Bitmap.prototype._onLoad.bind(bitmap);
     bitmap._image.onerror = Bitmap.prototype._onError.bind(bitmap);
     bitmap._url = url;
