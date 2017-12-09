@@ -488,6 +488,7 @@ Bitmap.snap = function(stage) {
         renderTexture.render(stage);
         stage.worldTransform.identity();
     }
+
     if (Graphics.isWebGL()) {
         var gl =  renderTexture.renderer.gl;
         var webGLPixels = new Uint8Array(4 * width * height);
@@ -5419,6 +5420,7 @@ Window.prototype.addChildToBack = function(child) {
 };
 
 /**
+ *
  * @method updateTransform
  * @private
  */
@@ -5431,6 +5433,7 @@ Window.prototype.updateTransform = function() {
 };
 
 /**
+ * 创建子级显示对象
  * @method _createAllParts
  * @private
  */
