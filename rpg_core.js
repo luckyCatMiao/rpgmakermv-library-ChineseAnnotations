@@ -5644,6 +5644,7 @@ Window.prototype._updateCursor = function() {
 /**
  * @method _updateContents
  * @private
+ * 刷新内容
  */
 Window.prototype._updateContents = function() {
     var w = this._width - this._padding * 2;
