@@ -5463,6 +5463,7 @@ Window.prototype._createAllParts = function() {
  * @private
  */
 Window.prototype._onWindowskinLoad = function() {
+
     this._refreshAllParts();
 };
 
@@ -5523,6 +5524,7 @@ Window.prototype._refreshFrame = function() {
         var skin = this._windowskin;
         var p = 96;
         var q = 96;
+        //简化版的脏矩形算法
         bitmap.blt(skin, p+m, 0+0, p-m*2, m, m, 0, w-m*2, m);
         bitmap.blt(skin, p+m, 0+q-m, p-m*2, m, m, h-m, w-m*2, m);
         bitmap.blt(skin, p+0, 0+m, m, p-m*2, 0, m, m, h-m*2);
@@ -5537,6 +5539,7 @@ Window.prototype._refreshFrame = function() {
 /**
  * @method _refreshCursor
  * @private
+ * 刷新光标
  */
 Window.prototype._refreshCursor = function() {
     var pad = this._padding;
