@@ -3762,6 +3762,7 @@ Sprite.prototype._renderWebGL = function(renderSession) {
  */
 
 
+
 /**
  * The blend mode to be applied to the sprite.
  *
