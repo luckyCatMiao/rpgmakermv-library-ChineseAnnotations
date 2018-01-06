@@ -3770,6 +3770,8 @@ Sprite.prototype._renderWebGL = function(renderSession) {
  * @type Number
  */
 
+
+
 /**
  * Sets the filters for the sprite.
  *
