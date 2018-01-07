@@ -390,6 +390,7 @@ Scene_Title.prototype.drawGameTitle = function() {
     this._gameTitleSprite.bitmap.drawText(text, x, y, maxWidth, 48, 'center');
 };
 
+//居中sprite
 Scene_Title.prototype.centerSprite = function(sprite) {
     sprite.x = Graphics.width / 2;
     sprite.y = Graphics.height / 2;
