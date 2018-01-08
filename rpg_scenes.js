@@ -472,6 +472,7 @@ Scene_Map.prototype.create = function() {
 };
 
 Scene_Map.prototype.isReady = function() {
+    //地图数据是否已经加载完成
     if (!this._mapLoaded && DataManager.isMapLoaded()) {
         this.onMapLoaded();
         this._mapLoaded = true;
