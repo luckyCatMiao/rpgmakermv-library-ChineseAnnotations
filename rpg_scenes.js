@@ -480,6 +480,7 @@ Scene_Map.prototype.isReady = function() {
     return this._mapLoaded && Scene_Base.prototype.isReady.call(this);
 };
 
+//地图加载完毕时回调
 Scene_Map.prototype.onMapLoaded = function() {
     if (this._transfer) {
         $gamePlayer.performTransfer();
