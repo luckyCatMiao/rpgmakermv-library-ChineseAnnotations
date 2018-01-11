@@ -488,6 +488,7 @@ Scene_Map.prototype.onMapLoaded = function() {
     this.createDisplayObjects();
 };
 
+//启动
 Scene_Map.prototype.start = function() {
     Scene_Base.prototype.start.call(this);
     SceneManager.clearStack();
