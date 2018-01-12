@@ -502,6 +502,7 @@ Scene_Map.prototype.start = function() {
     this.menuCalling = false;
 };
 
+//更新
 Scene_Map.prototype.update = function() {
     this.updateDestination();
     this.updateMainMultiply();
