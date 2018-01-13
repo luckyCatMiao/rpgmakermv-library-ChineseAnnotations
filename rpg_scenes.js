@@ -515,6 +515,7 @@ Scene_Map.prototype.update = function() {
     Scene_Base.prototype.update.call(this);
 };
 
+//更新
 Scene_Map.prototype.updateMainMultiply = function() {
     this.updateMain();
     if (this.isFastForward()) {
