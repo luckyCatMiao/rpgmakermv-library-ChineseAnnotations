@@ -540,6 +540,7 @@ Scene_Map.prototype.isFastForward = function() {
             (Input.isLongPressed('ok') || TouchInput.isLongPressed()));
 };
 
+//停止
 Scene_Map.prototype.stop = function() {
     Scene_Base.prototype.stop.call(this);
     $gamePlayer.straighten();
