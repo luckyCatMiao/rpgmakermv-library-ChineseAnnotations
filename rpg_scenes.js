@@ -554,6 +554,7 @@ Scene_Map.prototype.stop = function() {
     }
 };
 
+//
 Scene_Map.prototype.isBusy = function() {
     return ((this._messageWindow && this._messageWindow.isClosing()) ||
             this._waitCount > 0 || this._encounterEffectDuration > 0 ||
