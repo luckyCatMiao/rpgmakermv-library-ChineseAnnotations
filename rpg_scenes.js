@@ -1468,6 +1468,7 @@ Scene_Status.prototype.initialize = function() {
     Scene_MenuBase.prototype.initialize.call(this);
 };
 
+//
 Scene_Status.prototype.create = function() {
     Scene_MenuBase.prototype.create.call(this);
     this._statusWindow = new Window_Status();
