@@ -68,6 +68,7 @@ Sprite_Base.prototype.startAnimation = function(animation, mirror, delay) {
     this._animationSprites.push(sprite);
 };
 
+//
 Sprite_Base.prototype.isAnimationPlaying = function() {
     return this._animationSprites.length > 0;
 };
