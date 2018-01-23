@@ -99,6 +99,7 @@ Sprite_Button.prototype.update = function() {
     this.processTouch();
 };
 
+//
 Sprite_Button.prototype.updateFrame = function() {
     var frame;
     if (this._touching) {
