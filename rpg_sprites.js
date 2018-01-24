@@ -130,15 +130,22 @@ Sprite_Button.prototype.callClickHandler = function() {
     }
 };
 
+//处理触屏事件
 Sprite_Button.prototype.processTouch = function() {
+    //如果当前按钮在active状态
     if (this.isActive()) {
+        //如果触控设定可以触发
         if (TouchInput.isTriggered() && this.isButtonTouched()) {
+            //设定当前按钮触控状态为触发
             this._touching = true;
         }
+        //如果当前状态在触控
         if (this._touching) {
+            //设置触控为false
             if (TouchInput.isReleased() || !this.isButtonTouched()) {
                 this._touching = false;
                 if (TouchInput.isReleased()) {
+                    //触发点击事件，即鼠标点击和触屏点击都会触发同样的点击事件
                     this.callClickHandler();
                 }
             }
