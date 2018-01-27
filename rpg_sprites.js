@@ -172,6 +172,8 @@ Sprite_Button.prototype.isButtonTouched = function() {
     return x >= 0 && y >= 0 && x < this.width && y < this.height;
 };
 
+//坐标转换 ，从全局坐标系到本地坐标系，他这个算法真的有点蛋疼，明明pixi直接支持矩阵运算的，而且他这样算，根本就没有算进旋转
+//怪不得默认的rm根本没有旋转行为
 Sprite_Button.prototype.canvasToLocalX = function(x) {
     var node = this;
     while (node) {
