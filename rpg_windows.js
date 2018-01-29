@@ -48,6 +48,7 @@ Window_Base.prototype.lineHeight = function() {
     return 36;
 };
 
+
 /**
  * 获得标准字体
  * @returns {*}
@@ -152,6 +153,9 @@ Window_Base.prototype.updateClose = function() {
     }
 };
 
+/**
+ * 打开窗口(有缓动)
+ */
 Window_Base.prototype.open = function() {
     if (!this.isOpen()) {
         this._opening = true;
@@ -159,6 +163,9 @@ Window_Base.prototype.open = function() {
     this._closing = false;
 };
 
+/**
+ * 关闭窗口(有缓动)
+ */
 Window_Base.prototype.close = function() {
     if (!this.isClosed()) {
         this._closing = true;
@@ -166,10 +173,18 @@ Window_Base.prototype.close = function() {
     this._opening = false;
 };
 
+/**
+ * 窗口是否打开
+ * @returns {boolean}
+ */
 Window_Base.prototype.isOpening = function() {
     return this._opening;
 };
 
+/**
+ * 窗口是否关闭(为什么非要写四个方法???)
+ * @returns {boolean}
+ */
 Window_Base.prototype.isClosing = function() {
     return this._closing;
 };
