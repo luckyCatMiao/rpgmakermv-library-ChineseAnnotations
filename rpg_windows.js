@@ -205,12 +205,21 @@ Window_Base.prototype.deactivate = function() {
     this.active = false;
 };
 
+/**
+ * 窗体内的文字颜色
+ * @param n
+ * @returns {String}
+ */
 Window_Base.prototype.textColor = function(n) {
     var px = 96 + (n % 8) * 12 + 6;
     var py = 144 + Math.floor(n / 8) * 12 + 6;
     return this.windowskin.getPixel(px, py);
 };
 
+/**
+ *
+ * @returns {String}
+ */
 Window_Base.prototype.normalColor = function() {
     return this.textColor(0);
 };
