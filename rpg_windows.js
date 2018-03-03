@@ -217,13 +217,17 @@ Window_Base.prototype.textColor = function(n) {
 };
 
 /**
- *
+ *普通颜色
  * @returns {String}
  */
 Window_Base.prototype.normalColor = function() {
     return this.textColor(0);
 };
 
+/**
+ * 系统颜色
+ * @returns {String}
+ */
 Window_Base.prototype.systemColor = function() {
     return this.textColor(16);
 };
