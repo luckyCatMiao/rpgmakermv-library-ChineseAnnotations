@@ -12,64 +12,65 @@
 function DataManager() {
     throw new Error('This is a static class');
 }
+
 //分类的数据集合
-var $dataActors       = null;
-var $dataClasses      = null;
-var $dataSkills       = null;
-var $dataItems        = null;
-var $dataWeapons      = null;
-var $dataArmors       = null;
-var $dataEnemies      = null;
-var $dataTroops       = null;
-var $dataStates       = null;
-var $dataAnimations   = null;
-var $dataTilesets     = null;
+var $dataActors = null;
+var $dataClasses = null;
+var $dataSkills = null;
+var $dataItems = null;
+var $dataWeapons = null;
+var $dataArmors = null;
+var $dataEnemies = null;
+var $dataTroops = null;
+var $dataStates = null;
+var $dataAnimations = null;
+var $dataTilesets = null;
 var $dataCommonEvents = null;
-var $dataSystem       = null;
-var $dataMapInfos     = null;
-var $dataMap          = null;
+var $dataSystem = null;
+var $dataMapInfos = null;
+var $dataMap = null;
 
 //单例对象 各种管理器
-var $gameTemp         = null;
-var $gameSystem       = null;
-var $gameScreen       = null;
-var $gameTimer        = null;
-var $gameMessage      = null;
-var $gameSwitches     = null;
-var $gameVariables    = null;
+var $gameTemp = null;
+var $gameSystem = null;
+var $gameScreen = null;
+var $gameTimer = null;
+var $gameMessage = null;
+var $gameSwitches = null;
+var $gameVariables = null;
 var $gameSelfSwitches = null;
-var $gameActors       = null;
-var $gameParty        = null;
-var $gameTroop        = null;
-var $gameMap          = null;
-var $gamePlayer       = null;
-var $testEvent        = null;
+var $gameActors = null;
+var $gameParty = null;
+var $gameTroop = null;
+var $gameMap = null;
+var $gamePlayer = null;
+var $testEvent = null;
 
-DataManager._globalId       = 'RPGMV';
+DataManager._globalId = 'RPGMV';
 DataManager._lastAccessedId = 1;
-DataManager._errorUrl       = null;
+DataManager._errorUrl = null;
 
 DataManager._databaseFiles = [
-    { name: '$dataActors',       src: 'Actors.json'       },
-    { name: '$dataClasses',      src: 'Classes.json'      },
-    { name: '$dataSkills',       src: 'Skills.json'       },
-    { name: '$dataItems',        src: 'Items.json'        },
-    { name: '$dataWeapons',      src: 'Weapons.json'      },
-    { name: '$dataArmors',       src: 'Armors.json'       },
-    { name: '$dataEnemies',      src: 'Enemies.json'      },
-    { name: '$dataTroops',       src: 'Troops.json'       },
-    { name: '$dataStates',       src: 'States.json'       },
-    { name: '$dataAnimations',   src: 'Animations.json'   },
-    { name: '$dataTilesets',     src: 'Tilesets.json'     },
-    { name: '$dataCommonEvents', src: 'CommonEvents.json' },
-    { name: '$dataSystem',       src: 'System.json'       },
-    { name: '$dataMapInfos',     src: 'MapInfos.json'     }
+    {name: '$dataActors', src: 'Actors.json'},
+    {name: '$dataClasses', src: 'Classes.json'},
+    {name: '$dataSkills', src: 'Skills.json'},
+    {name: '$dataItems', src: 'Items.json'},
+    {name: '$dataWeapons', src: 'Weapons.json'},
+    {name: '$dataArmors', src: 'Armors.json'},
+    {name: '$dataEnemies', src: 'Enemies.json'},
+    {name: '$dataTroops', src: 'Troops.json'},
+    {name: '$dataStates', src: 'States.json'},
+    {name: '$dataAnimations', src: 'Animations.json'},
+    {name: '$dataTilesets', src: 'Tilesets.json'},
+    {name: '$dataCommonEvents', src: 'CommonEvents.json'},
+    {name: '$dataSystem', src: 'System.json'},
+    {name: '$dataMapInfos', src: 'MapInfos.json'}
 ];
 
 /**
  * 加载json数据
  */
-DataManager.loadDatabase = function() {
+DataManager.loadDatabase = function () {
     var test = this.isBattleTest() || this.isEventTest();
     var prefix = test ? 'Test_' : '';
     for (var i = 0; i < this._databaseFiles.length; i++) {
@@ -87,19 +88,19 @@ DataManager.loadDatabase = function() {
  * @param name
  * @param src
  */
-DataManager.loadDataFile = function(name, src) {
+DataManager.loadDataFile = function (name, src) {
     var xhr = new XMLHttpRequest();
     var url = 'data/' + src;
     xhr.open('GET', url);
     xhr.overrideMimeType('application/json');
-    xhr.onload = function() {
+    xhr.onload = function () {
         if (xhr.status < 400) {
             window[name] = JSON.parse(xhr.responseText);
             DataManager.onLoad(window[name]);
         }
     };
     //如果错误的话将该url设置为_errorUrl
-    xhr.onerror = function() {
+    xhr.onerror = function () {
         DataManager._errorUrl = DataManager._errorUrl || url;
     };
 
@@ -112,7 +113,7 @@ DataManager.loadDataFile = function(name, src) {
  * 是否加载完成
  * @returns {boolean}
  */
-DataManager.isDatabaseLoaded = function() {
+DataManager.isDatabaseLoaded = function () {
     this.checkError();
     for (var i = 0; i < this._databaseFiles.length; i++) {
         if (!window[this._databaseFiles[i].name]) {
@@ -126,7 +127,7 @@ DataManager.isDatabaseLoaded = function() {
  * 加载地图数据
  * @param mapId
  */
-DataManager.loadMapData = function(mapId) {
+DataManager.loadMapData = function (mapId) {
     if (mapId > 0) {
         var filename = 'Map%1.json'.format(mapId.padZero(3));
         this.loadDataFile('$dataMap', filename);
@@ -135,7 +136,7 @@ DataManager.loadMapData = function(mapId) {
     }
 };
 
-DataManager.makeEmptyMap = function() {
+DataManager.makeEmptyMap = function () {
     $dataMap = {};
     $dataMap.data = [];
     $dataMap.events = [];
@@ -144,7 +145,7 @@ DataManager.makeEmptyMap = function() {
     $dataMap.scrollType = 3;
 };
 
-DataManager.isMapLoaded = function() {
+DataManager.isMapLoaded = function () {
     this.checkError();
     return !!$dataMap;
 };
@@ -153,7 +154,7 @@ DataManager.isMapLoaded = function() {
  * 处理加载进来的数据文件
  * @param object
  */
-DataManager.onLoad = function(object) {
+DataManager.onLoad = function (object) {
     var array;
     if (object === $dataMap) {
         this.extractMetadata(object);
@@ -175,10 +176,10 @@ DataManager.onLoad = function(object) {
  * 抽取元数据
  * @param data
  */
-DataManager.extractMetadata = function(data) {
+DataManager.extractMetadata = function (data) {
     var re = /<([^<>:]+)(:?)([^>]*)>/g;
     data.meta = {};
-    for (;;) {
+    for (; ;) {
         var match = re.exec(data.note);
         if (match) {
             if (match[2] === ':') {
@@ -192,57 +193,57 @@ DataManager.extractMetadata = function(data) {
     }
 };
 
-DataManager.checkError = function() {
+DataManager.checkError = function () {
     if (DataManager._errorUrl) {
         throw new Error('Failed to load: ' + DataManager._errorUrl);
     }
 };
 
-DataManager.isBattleTest = function() {
+DataManager.isBattleTest = function () {
     return Utils.isOptionValid('btest');
 };
 
-DataManager.isEventTest = function() {
+DataManager.isEventTest = function () {
     return Utils.isOptionValid('etest');
 };
 
-DataManager.isSkill = function(item) {
+DataManager.isSkill = function (item) {
     return item && $dataSkills.contains(item);
 };
 
-DataManager.isItem = function(item) {
+DataManager.isItem = function (item) {
     return item && $dataItems.contains(item);
 };
 
-DataManager.isWeapon = function(item) {
+DataManager.isWeapon = function (item) {
     return item && $dataWeapons.contains(item);
 };
 
-DataManager.isArmor = function(item) {
+DataManager.isArmor = function (item) {
     return item && $dataArmors.contains(item);
 };
 
 /**
  * 初始化子数据管理器
  */
-DataManager.createGameObjects = function() {
-    $gameTemp          = new Game_Temp();
-    $gameSystem        = new Game_System();
-    $gameScreen        = new Game_Screen();
-    $gameTimer         = new Game_Timer();
-    $gameMessage       = new Game_Message();
-    $gameSwitches      = new Game_Switches();
-    $gameVariables     = new Game_Variables();
-    $gameSelfSwitches  = new Game_SelfSwitches();
-    $gameActors        = new Game_Actors();
-    $gameParty         = new Game_Party();
-    $gameTroop         = new Game_Troop();
-    $gameMap           = new Game_Map();
-    $gamePlayer        = new Game_Player();
+DataManager.createGameObjects = function () {
+    $gameTemp = new Game_Temp();
+    $gameSystem = new Game_System();
+    $gameScreen = new Game_Screen();
+    $gameTimer = new Game_Timer();
+    $gameMessage = new Game_Message();
+    $gameSwitches = new Game_Switches();
+    $gameVariables = new Game_Variables();
+    $gameSelfSwitches = new Game_SelfSwitches();
+    $gameActors = new Game_Actors();
+    $gameParty = new Game_Party();
+    $gameTroop = new Game_Troop();
+    $gameMap = new Game_Map();
+    $gamePlayer = new Game_Player();
 };
 
 //初始化游戏数据
-DataManager.setupNewGame = function() {
+DataManager.setupNewGame = function () {
     //创建子游戏数据集
     this.createGameObjects();
     //加载存档文件
@@ -253,7 +254,7 @@ DataManager.setupNewGame = function() {
     Graphics.frameCount = 0;
 };
 
-DataManager.setupBattleTest = function() {
+DataManager.setupBattleTest = function () {
     this.createGameObjects();
     $gameParty.setupBattleTest();
     BattleManager.setup($dataSystem.testTroopId, true, false);
@@ -261,7 +262,7 @@ DataManager.setupBattleTest = function() {
     BattleManager.playBattleBgm();
 };
 
-DataManager.setupEventTest = function() {
+DataManager.setupEventTest = function () {
     this.createGameObjects();
     this.selectSavefileForNewGame();
     $gameParty.setupStartingMembers();
@@ -269,7 +270,7 @@ DataManager.setupEventTest = function() {
     $gamePlayer.setTransparent(false);
 };
 
-DataManager.loadGlobalInfo = function() {
+DataManager.loadGlobalInfo = function () {
     var json;
     try {
         json = StorageManager.load(0);
@@ -290,11 +291,11 @@ DataManager.loadGlobalInfo = function() {
     }
 };
 
-DataManager.saveGlobalInfo = function(info) {
+DataManager.saveGlobalInfo = function (info) {
     StorageManager.save(0, JSON.stringify(info));
 };
 
-DataManager.isThisGameFile = function(savefileId) {
+DataManager.isThisGameFile = function (savefileId) {
     var globalInfo = this.loadGlobalInfo();
     if (globalInfo && globalInfo[savefileId]) {
         if (StorageManager.isLocalMode()) {
@@ -302,14 +303,14 @@ DataManager.isThisGameFile = function(savefileId) {
         } else {
             var savefile = globalInfo[savefileId];
             return (savefile.globalId === this._globalId &&
-                    savefile.title === $dataSystem.gameTitle);
+                savefile.title === $dataSystem.gameTitle);
         }
     } else {
         return false;
     }
 };
 
-DataManager.isAnySavefileExists = function() {
+DataManager.isAnySavefileExists = function () {
     var globalInfo = this.loadGlobalInfo();
     if (globalInfo) {
         for (var i = 1; i < globalInfo.length; i++) {
@@ -321,7 +322,7 @@ DataManager.isAnySavefileExists = function() {
     return false;
 };
 
-DataManager.latestSavefileId = function() {
+DataManager.latestSavefileId = function () {
     var globalInfo = this.loadGlobalInfo();
     var savefileId = 1;
     var timestamp = 0;
@@ -336,7 +337,7 @@ DataManager.latestSavefileId = function() {
     return savefileId;
 };
 
-DataManager.loadAllSavefileImages = function() {
+DataManager.loadAllSavefileImages = function () {
     var globalInfo = this.loadGlobalInfo();
     if (globalInfo) {
         for (var i = 1; i < globalInfo.length; i++) {
@@ -348,7 +349,7 @@ DataManager.loadAllSavefileImages = function() {
     }
 };
 
-DataManager.loadSavefileImages = function(info) {
+DataManager.loadSavefileImages = function (info) {
     if (info.characters) {
         for (var i = 0; i < info.characters.length; i++) {
             ImageManager.loadCharacter(info.characters[i][0]);
@@ -361,11 +362,11 @@ DataManager.loadSavefileImages = function(info) {
     }
 };
 
-DataManager.maxSavefiles = function() {
+DataManager.maxSavefiles = function () {
     return 20;
 };
 
-DataManager.saveGame = function(savefileId) {
+DataManager.saveGame = function (savefileId) {
     try {
         StorageManager.backup(savefileId);
         return this.saveGameWithoutRescue(savefileId);
@@ -380,7 +381,7 @@ DataManager.saveGame = function(savefileId) {
     }
 };
 
-DataManager.loadGame = function(savefileId) {
+DataManager.loadGame = function (savefileId) {
     try {
         return this.loadGameWithoutRescue(savefileId);
     } catch (e) {
@@ -389,16 +390,16 @@ DataManager.loadGame = function(savefileId) {
     }
 };
 
-DataManager.loadSavefileInfo = function(savefileId) {
+DataManager.loadSavefileInfo = function (savefileId) {
     var globalInfo = this.loadGlobalInfo();
     return (globalInfo && globalInfo[savefileId]) ? globalInfo[savefileId] : null;
 };
 
-DataManager.lastAccessedSavefileId = function() {
+DataManager.lastAccessedSavefileId = function () {
     return this._lastAccessedId;
 };
 
-DataManager.saveGameWithoutRescue = function(savefileId) {
+DataManager.saveGameWithoutRescue = function (savefileId) {
     var json = JsonEx.stringify(this.makeSaveContents());
     if (json.length >= 200000) {
         console.warn('Save data too big!');
@@ -411,7 +412,7 @@ DataManager.saveGameWithoutRescue = function(savefileId) {
     return true;
 };
 
-DataManager.loadGameWithoutRescue = function(savefileId) {
+DataManager.loadGameWithoutRescue = function (savefileId) {
     var globalInfo = this.loadGlobalInfo();
     if (this.isThisGameFile(savefileId)) {
         var json = StorageManager.load(savefileId);
@@ -424,7 +425,7 @@ DataManager.loadGameWithoutRescue = function(savefileId) {
     }
 };
 
-DataManager.selectSavefileForNewGame = function() {
+DataManager.selectSavefileForNewGame = function () {
     var globalInfo = this.loadGlobalInfo();
     this._lastAccessedId = 1;
     if (globalInfo) {
@@ -447,44 +448,44 @@ DataManager.selectSavefileForNewGame = function() {
     }
 };
 
-DataManager.makeSavefileInfo = function() {
+DataManager.makeSavefileInfo = function () {
     var info = {};
-    info.globalId   = this._globalId;
-    info.title      = $dataSystem.gameTitle;
+    info.globalId = this._globalId;
+    info.title = $dataSystem.gameTitle;
     info.characters = $gameParty.charactersForSavefile();
-    info.faces      = $gameParty.facesForSavefile();
-    info.playtime   = $gameSystem.playtimeText();
-    info.timestamp  = Date.now();
+    info.faces = $gameParty.facesForSavefile();
+    info.playtime = $gameSystem.playtimeText();
+    info.timestamp = Date.now();
     return info;
 };
 
-DataManager.makeSaveContents = function() {
+DataManager.makeSaveContents = function () {
     // A save data does not contain $gameTemp, $gameMessage, and $gameTroop.
     var contents = {};
-    contents.system       = $gameSystem;
-    contents.screen       = $gameScreen;
-    contents.timer        = $gameTimer;
-    contents.switches     = $gameSwitches;
-    contents.variables    = $gameVariables;
+    contents.system = $gameSystem;
+    contents.screen = $gameScreen;
+    contents.timer = $gameTimer;
+    contents.switches = $gameSwitches;
+    contents.variables = $gameVariables;
     contents.selfSwitches = $gameSelfSwitches;
-    contents.actors       = $gameActors;
-    contents.party        = $gameParty;
-    contents.map          = $gameMap;
-    contents.player       = $gamePlayer;
+    contents.actors = $gameActors;
+    contents.party = $gameParty;
+    contents.map = $gameMap;
+    contents.player = $gamePlayer;
     return contents;
 };
 
-DataManager.extractSaveContents = function(contents) {
-    $gameSystem        = contents.system;
-    $gameScreen        = contents.screen;
-    $gameTimer         = contents.timer;
-    $gameSwitches      = contents.switches;
-    $gameVariables     = contents.variables;
-    $gameSelfSwitches  = contents.selfSwitches;
-    $gameActors        = contents.actors;
-    $gameParty         = contents.party;
-    $gameMap           = contents.map;
-    $gamePlayer        = contents.player;
+DataManager.extractSaveContents = function (contents) {
+    $gameSystem = contents.system;
+    $gameScreen = contents.screen;
+    $gameTimer = contents.timer;
+    $gameSwitches = contents.switches;
+    $gameVariables = contents.variables;
+    $gameSelfSwitches = contents.selfSwitches;
+    $gameActors = contents.actors;
+    $gameParty = contents.party;
+    $gameMap = contents.map;
+    $gamePlayer = contents.player;
 };
 
 //-----------------------------------------------------------------------------
@@ -496,50 +497,50 @@ function ConfigManager() {
     throw new Error('This is a static class');
 }
 
-ConfigManager.alwaysDash        = false;
-ConfigManager.commandRemember   = false;
+ConfigManager.alwaysDash = false;
+ConfigManager.commandRemember = false;
 
 Object.defineProperty(ConfigManager, 'bgmVolume', {
-    get: function() {
+    get: function () {
         return AudioManager._bgmVolume;
     },
-    set: function(value) {
+    set: function (value) {
         AudioManager.bgmVolume = value;
     },
     configurable: true
 });
 
 Object.defineProperty(ConfigManager, 'bgsVolume', {
-    get: function() {
+    get: function () {
         return AudioManager.bgsVolume;
     },
-    set: function(value) {
+    set: function (value) {
         AudioManager.bgsVolume = value;
     },
     configurable: true
 });
 
 Object.defineProperty(ConfigManager, 'meVolume', {
-    get: function() {
+    get: function () {
         return AudioManager.meVolume;
     },
-    set: function(value) {
+    set: function (value) {
         AudioManager.meVolume = value;
     },
     configurable: true
 });
 
 Object.defineProperty(ConfigManager, 'seVolume', {
-    get: function() {
+    get: function () {
         return AudioManager.seVolume;
     },
-    set: function(value) {
+    set: function (value) {
         AudioManager.seVolume = value;
     },
     configurable: true
 });
 
-ConfigManager.load = function() {
+ConfigManager.load = function () {
     var json;
     var config = {};
     try {
@@ -553,11 +554,11 @@ ConfigManager.load = function() {
     this.applyData(config);
 };
 
-ConfigManager.save = function() {
+ConfigManager.save = function () {
     StorageManager.save(-1, JSON.stringify(this.makeData()));
 };
 
-ConfigManager.makeData = function() {
+ConfigManager.makeData = function () {
     var config = {};
     config.alwaysDash = this.alwaysDash;
     config.commandRemember = this.commandRemember;
@@ -568,7 +569,7 @@ ConfigManager.makeData = function() {
     return config;
 };
 
-ConfigManager.applyData = function(config) {
+ConfigManager.applyData = function (config) {
     this.alwaysDash = this.readFlag(config, 'alwaysDash');
     this.commandRemember = this.readFlag(config, 'commandRemember');
     this.bgmVolume = this.readVolume(config, 'bgmVolume');
@@ -577,11 +578,11 @@ ConfigManager.applyData = function(config) {
     this.seVolume = this.readVolume(config, 'seVolume');
 };
 
-ConfigManager.readFlag = function(config, name) {
+ConfigManager.readFlag = function (config, name) {
     return !!config[name];
 };
 
-ConfigManager.readVolume = function(config, name) {
+ConfigManager.readVolume = function (config, name) {
     var value = config[name];
     if (value !== undefined) {
         return Number(value).clamp(0, 100);
@@ -599,7 +600,7 @@ function StorageManager() {
     throw new Error('This is a static class');
 }
 
-StorageManager.save = function(savefileId, json) {
+StorageManager.save = function (savefileId, json) {
     if (this.isLocalMode()) {
         this.saveToLocalFile(savefileId, json);
     } else {
@@ -607,7 +608,7 @@ StorageManager.save = function(savefileId, json) {
     }
 };
 
-StorageManager.load = function(savefileId) {
+StorageManager.load = function (savefileId) {
     if (this.isLocalMode()) {
         return this.loadFromLocalFile(savefileId);
     } else {
@@ -615,7 +616,7 @@ StorageManager.load = function(savefileId) {
     }
 };
 
-StorageManager.exists = function(savefileId) {
+StorageManager.exists = function (savefileId) {
     if (this.isLocalMode()) {
         return this.localFileExists(savefileId);
     } else {
@@ -623,7 +624,7 @@ StorageManager.exists = function(savefileId) {
     }
 };
 
-StorageManager.remove = function(savefileId) {
+StorageManager.remove = function (savefileId) {
     if (this.isLocalMode()) {
         this.removeLocalFile(savefileId);
     } else {
@@ -631,7 +632,7 @@ StorageManager.remove = function(savefileId) {
     }
 };
 
-StorageManager.backup = function(savefileId) {
+StorageManager.backup = function (savefileId) {
     if (this.exists(savefileId)) {
         if (this.isLocalMode()) {
             var data = this.loadFromLocalFile(savefileId);
@@ -652,7 +653,7 @@ StorageManager.backup = function(savefileId) {
     }
 };
 
-StorageManager.backupExists = function(savefileId) {
+StorageManager.backupExists = function (savefileId) {
     if (this.isLocalMode()) {
         return this.localFileBackupExists(savefileId);
     } else {
@@ -660,21 +661,21 @@ StorageManager.backupExists = function(savefileId) {
     }
 };
 
-StorageManager.cleanBackup = function(savefileId) {
-	if (this.backupExists(savefileId)) {
-		if (this.isLocalMode()) {
-			var fs = require('fs');
+StorageManager.cleanBackup = function (savefileId) {
+    if (this.backupExists(savefileId)) {
+        if (this.isLocalMode()) {
+            var fs = require('fs');
             var dirPath = this.localFileDirectoryPath();
             var filePath = this.localFilePath(savefileId);
             fs.unlinkSync(filePath + ".bak");
-		} else {
-		    var key = this.webStorageKey(savefileId);
-			localStorage.removeItem(key + "bak");
-		}
-	}
+        } else {
+            var key = this.webStorageKey(savefileId);
+            localStorage.removeItem(key + "bak");
+        }
+    }
 };
 
-StorageManager.restoreBackup = function(savefileId) {
+StorageManager.restoreBackup = function (savefileId) {
     if (this.backupExists(savefileId)) {
         if (this.isLocalMode()) {
             var data = this.loadFromLocalBackupFile(savefileId);
@@ -692,16 +693,16 @@ StorageManager.restoreBackup = function(savefileId) {
             var compressed = LZString.compressToBase64(data);
             var key = this.webStorageKey(savefileId);
             localStorage.setItem(key, compressed);
-            localStorage.removeItem(key + "bak","");
+            localStorage.removeItem(key + "bak", "");
         }
     }
 };
 
-StorageManager.isLocalMode = function() {
+StorageManager.isLocalMode = function () {
     return Utils.isNwjs();
 };
 
-StorageManager.saveToLocalFile = function(savefileId, json) {
+StorageManager.saveToLocalFile = function (savefileId, json) {
     var data = LZString.compressToBase64(json);
     var fs = require('fs');
     var dirPath = this.localFileDirectoryPath();
@@ -712,37 +713,37 @@ StorageManager.saveToLocalFile = function(savefileId, json) {
     fs.writeFileSync(filePath, data);
 };
 
-StorageManager.loadFromLocalFile = function(savefileId) {
+StorageManager.loadFromLocalFile = function (savefileId) {
     var data = null;
     var fs = require('fs');
     var filePath = this.localFilePath(savefileId);
     if (fs.existsSync(filePath)) {
-        data = fs.readFileSync(filePath, { encoding: 'utf8' });
+        data = fs.readFileSync(filePath, {encoding: 'utf8'});
     }
     return LZString.decompressFromBase64(data);
 };
 
-StorageManager.loadFromLocalBackupFile = function(savefileId) {
+StorageManager.loadFromLocalBackupFile = function (savefileId) {
     var data = null;
     var fs = require('fs');
     var filePath = this.localFilePath(savefileId) + ".bak";
     if (fs.existsSync(filePath)) {
-        data = fs.readFileSync(filePath, { encoding: 'utf8' });
+        data = fs.readFileSync(filePath, {encoding: 'utf8'});
     }
     return LZString.decompressFromBase64(data);
 };
 
-StorageManager.localFileBackupExists = function(savefileId) {
+StorageManager.localFileBackupExists = function (savefileId) {
     var fs = require('fs');
     return fs.existsSync(this.localFilePath(savefileId) + ".bak");
 };
 
-StorageManager.localFileExists = function(savefileId) {
+StorageManager.localFileExists = function (savefileId) {
     var fs = require('fs');
     return fs.existsSync(this.localFilePath(savefileId));
 };
 
-StorageManager.removeLocalFile = function(savefileId) {
+StorageManager.removeLocalFile = function (savefileId) {
     var fs = require('fs');
     var filePath = this.localFilePath(savefileId);
     if (fs.existsSync(filePath)) {
@@ -750,40 +751,40 @@ StorageManager.removeLocalFile = function(savefileId) {
     }
 };
 
-StorageManager.saveToWebStorage = function(savefileId, json) {
+StorageManager.saveToWebStorage = function (savefileId, json) {
     var key = this.webStorageKey(savefileId);
     var data = LZString.compressToBase64(json);
     localStorage.setItem(key, data);
 };
 
-StorageManager.loadFromWebStorage = function(savefileId) {
+StorageManager.loadFromWebStorage = function (savefileId) {
     var key = this.webStorageKey(savefileId);
     var data = localStorage.getItem(key);
     return LZString.decompressFromBase64(data);
 };
 
-StorageManager.loadFromWebStorageBackup = function(savefileId) {
+StorageManager.loadFromWebStorageBackup = function (savefileId) {
     var key = this.webStorageKey(savefileId) + "bak";
     var data = localStorage.getItem(key);
     return LZString.decompressFromBase64(data);
 };
 
-StorageManager.webStorageBackupExists = function(savefileId) {
+StorageManager.webStorageBackupExists = function (savefileId) {
     var key = this.webStorageKey(savefileId) + "bak";
     return !!localStorage.getItem(key);
 };
 
-StorageManager.webStorageExists = function(savefileId) {
+StorageManager.webStorageExists = function (savefileId) {
     var key = this.webStorageKey(savefileId);
     return !!localStorage.getItem(key);
 };
 
-StorageManager.removeWebStorage = function(savefileId) {
+StorageManager.removeWebStorage = function (savefileId) {
     var key = this.webStorageKey(savefileId);
     localStorage.removeItem(key);
 };
 
-StorageManager.localFileDirectoryPath = function() {
+StorageManager.localFileDirectoryPath = function () {
     var path = window.location.pathname.replace(/(\/www|)\/[^\/]*$/, '/save/');
     if (path.match(/^\/([A-Z]\:)/)) {
         path = path.slice(1);
@@ -791,7 +792,7 @@ StorageManager.localFileDirectoryPath = function() {
     return decodeURIComponent(path);
 };
 
-StorageManager.localFilePath = function(savefileId) {
+StorageManager.localFilePath = function (savefileId) {
     var name;
     if (savefileId < 0) {
         name = 'config.rpgsave';
@@ -803,7 +804,7 @@ StorageManager.localFilePath = function(savefileId) {
     return this.localFileDirectoryPath() + name;
 };
 
-StorageManager.webStorageKey = function(savefileId) {
+StorageManager.webStorageKey = function (savefileId) {
     if (savefileId < 0) {
         return 'RPG Config';
     } else if (savefileId === 0) {
@@ -828,63 +829,63 @@ function ImageManager() {
 
 ImageManager._cache = {};
 
-ImageManager.loadAnimation = function(filename, hue) {
+ImageManager.loadAnimation = function (filename, hue) {
     return this.loadBitmap('img/animations/', filename, hue, true);
 };
 
-ImageManager.loadBattleback1 = function(filename, hue) {
+ImageManager.loadBattleback1 = function (filename, hue) {
     return this.loadBitmap('img/battlebacks1/', filename, hue, true);
 };
 
-ImageManager.loadBattleback2 = function(filename, hue) {
+ImageManager.loadBattleback2 = function (filename, hue) {
     return this.loadBitmap('img/battlebacks2/', filename, hue, true);
 };
 
-ImageManager.loadEnemy = function(filename, hue) {
+ImageManager.loadEnemy = function (filename, hue) {
     return this.loadBitmap('img/enemies/', filename, hue, true);
 };
 
-ImageManager.loadCharacter = function(filename, hue) {
+ImageManager.loadCharacter = function (filename, hue) {
     return this.loadBitmap('img/characters/', filename, hue, false);
 };
 
-ImageManager.loadFace = function(filename, hue) {
+ImageManager.loadFace = function (filename, hue) {
     return this.loadBitmap('img/faces/', filename, hue, true);
 };
 
-ImageManager.loadParallax = function(filename, hue) {
+ImageManager.loadParallax = function (filename, hue) {
     return this.loadBitmap('img/parallaxes/', filename, hue, true);
 };
 
-ImageManager.loadPicture = function(filename, hue) {
+ImageManager.loadPicture = function (filename, hue) {
     return this.loadBitmap('img/pictures/', filename, hue, true);
 };
 
-ImageManager.loadSvActor = function(filename, hue) {
+ImageManager.loadSvActor = function (filename, hue) {
     return this.loadBitmap('img/sv_actors/', filename, hue, false);
 };
 
-ImageManager.loadSvEnemy = function(filename, hue) {
+ImageManager.loadSvEnemy = function (filename, hue) {
     return this.loadBitmap('img/sv_enemies/', filename, hue, true);
 };
 
-ImageManager.loadSystem = function(filename, hue) {
+ImageManager.loadSystem = function (filename, hue) {
     return this.loadBitmap('img/system/', filename, hue, false);
 };
 
-ImageManager.loadTileset = function(filename, hue) {
+ImageManager.loadTileset = function (filename, hue) {
     return this.loadBitmap('img/tilesets/', filename, hue, false);
 };
 
-ImageManager.loadTitle1 = function(filename, hue) {
+ImageManager.loadTitle1 = function (filename, hue) {
     return this.loadBitmap('img/titles1/', filename, hue, true);
 };
 
-ImageManager.loadTitle2 = function(filename, hue) {
+ImageManager.loadTitle2 = function (filename, hue) {
     return this.loadBitmap('img/titles2/', filename, hue, true);
 };
 
-ImageManager.loadBitmap = function(folder, filename, hue, smooth) {
+ImageManager.loadBitmap = function (folder, filename, hue, smooth) {
     if (filename) {
         var path = folder + encodeURIComponent(filename) + '.png';
         var bitmap = this.loadNormalBitmap(path, hue || 0);
@@ -895,7 +896,7 @@ ImageManager.loadBitmap = function(folder, filename, hue, smooth) {
     }
 };
 
-ImageManager.loadEmptyBitmap = function() {
+ImageManager.loadEmptyBitmap = function () {
     if (!this._cache[null]) {
         this._cache[null] = new Bitmap();
     }
@@ -908,12 +909,12 @@ ImageManager.loadEmptyBitmap = function() {
  * @param hue
  * @returns {*}
  */
-ImageManager.loadNormalBitmap = function(path, hue) {
+ImageManager.loadNormalBitmap = function (path, hue) {
     var key = path + ':' + hue;
     //缓存机制 检测该图片是否已经加载
     if (!this._cache[key]) {
         var bitmap = Bitmap.load(path);
-        bitmap.addLoadListener(function() {
+        bitmap.addLoadListener(function () {
             bitmap.rotateHue(hue);
         });
         //放入缓存中 他这里并不是加载完毕后再放入 而是放入后再加载
@@ -922,7 +923,7 @@ ImageManager.loadNormalBitmap = function(path, hue) {
     return this._cache[key];
 };
 
-ImageManager.clear = function() {
+ImageManager.clear = function () {
     this._cache = {};
 };
 
@@ -930,7 +931,7 @@ ImageManager.clear = function() {
  * 检测是否所有需要载入的图片都载入完毕
  * @returns {boolean}
  */
-ImageManager.isReady = function() {
+ImageManager.isReady = function () {
     for (var key in this._cache) {
         var bitmap = this._cache[key];
         if (bitmap.isError()) {
@@ -943,17 +944,17 @@ ImageManager.isReady = function() {
     return true;
 };
 
-ImageManager.isObjectCharacter = function(filename) {
+ImageManager.isObjectCharacter = function (filename) {
     var sign = filename.match(/^[\!\$]+/);
     return sign && sign[0].contains('!');
 };
 
-ImageManager.isBigCharacter = function(filename) {
+ImageManager.isBigCharacter = function (filename) {
     var sign = filename.match(/^[\!\$]+/);
     return sign && sign[0].contains('$');
 };
 
-ImageManager.isZeroParallax = function(filename) {
+ImageManager.isZeroParallax = function (filename) {
     return filename.charAt(0) === '!';
 };
 
@@ -966,25 +967,25 @@ function AudioManager() {
     throw new Error('This is a static class');
 }
 
-AudioManager._bgmVolume      = 100;
-AudioManager._bgsVolume      = 100;
-AudioManager._meVolume       = 100;
-AudioManager._seVolume       = 100;
-AudioManager._currentBgm     = null;
-AudioManager._currentBgs     = null;
-AudioManager._bgmBuffer      = null;
-AudioManager._bgsBuffer      = null;
-AudioManager._meBuffer       = null;
-AudioManager._seBuffers      = [];
-AudioManager._staticBuffers  = [];
+AudioManager._bgmVolume = 100;
+AudioManager._bgsVolume = 100;
+AudioManager._meVolume = 100;
+AudioManager._seVolume = 100;
+AudioManager._currentBgm = null;
+AudioManager._currentBgs = null;
+AudioManager._bgmBuffer = null;
+AudioManager._bgsBuffer = null;
+AudioManager._meBuffer = null;
+AudioManager._seBuffers = [];
+AudioManager._staticBuffers = [];
 AudioManager._replayFadeTime = 0.5;
-AudioManager._path           = 'audio/';
+AudioManager._path = 'audio/';
 
 Object.defineProperty(AudioManager, 'bgmVolume', {
-    get: function() {
+    get: function () {
         return this._bgmVolume;
     },
-    set: function(value) {
+    set: function (value) {
         this._bgmVolume = value;
         this.updateBgmParameters(this._currentBgm);
     },
@@ -992,10 +993,10 @@ Object.defineProperty(AudioManager, 'bgmVolume', {
 });
 
 Object.defineProperty(AudioManager, 'bgsVolume', {
-    get: function() {
+    get: function () {
         return this._bgsVolume;
     },
-    set: function(value) {
+    set: function (value) {
         this._bgsVolume = value;
         this.updateBgsParameters(this._currentBgs);
     },
@@ -1003,10 +1004,10 @@ Object.defineProperty(AudioManager, 'bgsVolume', {
 });
 
 Object.defineProperty(AudioManager, 'meVolume', {
-    get: function() {
+    get: function () {
         return this._meVolume;
     },
-    set: function(value) {
+    set: function (value) {
         this._meVolume = value;
         this.updateMeParameters(this._currentMe);
     },
@@ -1014,16 +1015,16 @@ Object.defineProperty(AudioManager, 'meVolume', {
 });
 
 Object.defineProperty(AudioManager, 'seVolume', {
-    get: function() {
+    get: function () {
         return this._seVolume;
     },
-    set: function(value) {
+    set: function (value) {
         this._seVolume = value;
     },
     configurable: true
 });
 
-AudioManager.playBgm = function(bgm, pos) {
+AudioManager.playBgm = function (bgm, pos) {
     if (this.isCurrentBgm(bgm)) {
         this.updateBgmParameters(bgm);
     } else {
@@ -1039,7 +1040,7 @@ AudioManager.playBgm = function(bgm, pos) {
     this.updateCurrentBgm(bgm, pos);
 };
 
-AudioManager.replayBgm = function(bgm) {
+AudioManager.replayBgm = function (bgm) {
     if (this.isCurrentBgm(bgm)) {
         this.updateBgmParameters(bgm);
     } else {
@@ -1050,16 +1051,16 @@ AudioManager.replayBgm = function(bgm) {
     }
 };
 
-AudioManager.isCurrentBgm = function(bgm) {
+AudioManager.isCurrentBgm = function (bgm) {
     return (this._currentBgm && this._bgmBuffer &&
-            this._currentBgm.name === bgm.name);
+        this._currentBgm.name === bgm.name);
 };
 
-AudioManager.updateBgmParameters = function(bgm) {
+AudioManager.updateBgmParameters = function (bgm) {
     this.updateBufferParameters(this._bgmBuffer, this._bgmVolume, bgm);
 };
 
-AudioManager.updateCurrentBgm = function(bgm, pos) {
+AudioManager.updateCurrentBgm = function (bgm, pos) {
     this._currentBgm = {
         name: bgm.name,
         volume: bgm.volume,
@@ -1069,7 +1070,7 @@ AudioManager.updateCurrentBgm = function(bgm, pos) {
     };
 };
 
-AudioManager.stopBgm = function() {
+AudioManager.stopBgm = function () {
     if (this._bgmBuffer) {
         this._bgmBuffer.stop();
         this._bgmBuffer = null;
@@ -1077,20 +1078,20 @@ AudioManager.stopBgm = function() {
     }
 };
 
-AudioManager.fadeOutBgm = function(duration) {
+AudioManager.fadeOutBgm = function (duration) {
     if (this._bgmBuffer && this._currentBgm) {
         this._bgmBuffer.fadeOut(duration);
         this._currentBgm = null;
     }
 };
 
-AudioManager.fadeInBgm = function(duration) {
+AudioManager.fadeInBgm = function (duration) {
     if (this._bgmBuffer && this._currentBgm) {
         this._bgmBuffer.fadeIn(duration);
     }
 };
 
-AudioManager.playBgs = function(bgs, pos) {
+AudioManager.playBgs = function (bgs, pos) {
     if (this.isCurrentBgs(bgs)) {
         this.updateBgsParameters(bgs);
     } else {
@@ -1104,7 +1105,7 @@ AudioManager.playBgs = function(bgs, pos) {
     this.updateCurrentBgs(bgs, pos);
 };
 
-AudioManager.replayBgs = function(bgs) {
+AudioManager.replayBgs = function (bgs) {
     if (this.isCurrentBgs(bgs)) {
         this.updateBgsParameters(bgs);
     } else {
@@ -1115,16 +1116,16 @@ AudioManager.replayBgs = function(bgs) {
     }
 };
 
-AudioManager.isCurrentBgs = function(bgs) {
+AudioManager.isCurrentBgs = function (bgs) {
     return (this._currentBgs && this._bgsBuffer &&
-            this._currentBgs.name === bgs.name);
+        this._currentBgs.name === bgs.name);
 };
 
-AudioManager.updateBgsParameters = function(bgs) {
+AudioManager.updateBgsParameters = function (bgs) {
     this.updateBufferParameters(this._bgsBuffer, this._bgsVolume, bgs);
 };
 
-AudioManager.updateCurrentBgs = function(bgs, pos) {
+AudioManager.updateCurrentBgs = function (bgs, pos) {
     this._currentBgs = {
         name: bgs.name,
         volume: bgs.volume,
@@ -1134,7 +1135,7 @@ AudioManager.updateCurrentBgs = function(bgs, pos) {
     };
 };
 
-AudioManager.stopBgs = function() {
+AudioManager.stopBgs = function () {
     if (this._bgsBuffer) {
         this._bgsBuffer.stop();
         this._bgsBuffer = null;
@@ -1142,20 +1143,20 @@ AudioManager.stopBgs = function() {
     }
 };
 
-AudioManager.fadeOutBgs = function(duration) {
+AudioManager.fadeOutBgs = function (duration) {
     if (this._bgsBuffer && this._currentBgs) {
         this._bgsBuffer.fadeOut(duration);
         this._currentBgs = null;
     }
 };
 
-AudioManager.fadeInBgs = function(duration) {
+AudioManager.fadeInBgs = function (duration) {
     if (this._bgsBuffer && this._currentBgs) {
         this._bgsBuffer.fadeIn(duration);
     }
 };
 
-AudioManager.playMe = function(me) {
+AudioManager.playMe = function (me) {
     this.stopMe();
     if (me.name) {
         if (this._bgmBuffer && this._currentBgm) {
@@ -1169,17 +1170,17 @@ AudioManager.playMe = function(me) {
     }
 };
 
-AudioManager.updateMeParameters = function(me) {
+AudioManager.updateMeParameters = function (me) {
     this.updateBufferParameters(this._meBuffer, this._meVolume, me);
 };
 
-AudioManager.fadeOutMe = function(duration) {
+AudioManager.fadeOutMe = function (duration) {
     if (this._meBuffer) {
         this._meBuffer.fadeOut(duration);
     }
 };
 
-AudioManager.stopMe = function() {
+AudioManager.stopMe = function () {
     if (this._meBuffer) {
         this._meBuffer.stop();
         this._meBuffer = null;
@@ -1190,9 +1191,9 @@ AudioManager.stopMe = function() {
     }
 };
 
-AudioManager.playSe = function(se) {
+AudioManager.playSe = function (se) {
     if (se.name) {
-        this._seBuffers = this._seBuffers.filter(function(audio) {
+        this._seBuffers = this._seBuffers.filter(function (audio) {
             return audio.isPlaying();
         });
         var buffer = this.createBuffer('se', se.name);
@@ -1202,18 +1203,18 @@ AudioManager.playSe = function(se) {
     }
 };
 
-AudioManager.updateSeParameters = function(buffer, se) {
+AudioManager.updateSeParameters = function (buffer, se) {
     this.updateBufferParameters(buffer, this._seVolume, se);
 };
 
-AudioManager.stopSe = function() {
-    this._seBuffers.forEach(function(buffer) {
+AudioManager.stopSe = function () {
+    this._seBuffers.forEach(function (buffer) {
         buffer.stop();
     });
     this._seBuffers = [];
 };
 
-AudioManager.playStaticSe = function(se) {
+AudioManager.playStaticSe = function (se) {
     if (se.name) {
         this.loadStaticSe(se);
         for (var i = 0; i < this._staticBuffers.length; i++) {
@@ -1228,7 +1229,7 @@ AudioManager.playStaticSe = function(se) {
     }
 };
 
-AudioManager.loadStaticSe = function(se) {
+AudioManager.loadStaticSe = function (se) {
     if (se.name && !this.isStaticSe(se)) {
         var buffer = this.createBuffer('se', se.name);
         buffer._reservedSeName = se.name;
@@ -1239,7 +1240,7 @@ AudioManager.loadStaticSe = function(se) {
     }
 };
 
-AudioManager.isStaticSe = function(se) {
+AudioManager.isStaticSe = function (se) {
     for (var i = 0; i < this._staticBuffers.length; i++) {
         var buffer = this._staticBuffers[i];
         if (buffer._reservedSeName === se.name) {
@@ -1249,14 +1250,14 @@ AudioManager.isStaticSe = function(se) {
     return false;
 };
 
-AudioManager.stopAll = function() {
+AudioManager.stopAll = function () {
     this.stopMe();
     this.stopBgm();
     this.stopBgs();
     this.stopSe();
 };
 
-AudioManager.saveBgm = function() {
+AudioManager.saveBgm = function () {
     if (this._currentBgm) {
         var bgm = this._currentBgm;
         return {
@@ -1271,7 +1272,7 @@ AudioManager.saveBgm = function() {
     }
 };
 
-AudioManager.saveBgs = function() {
+AudioManager.saveBgs = function () {
     if (this._currentBgs) {
         var bgs = this._currentBgs;
         return {
@@ -1286,11 +1287,11 @@ AudioManager.saveBgs = function() {
     }
 };
 
-AudioManager.makeEmptyAudioObject = function() {
-    return { name: '', volume: 0, pitch: 0 };
+AudioManager.makeEmptyAudioObject = function () {
+    return {name: '', volume: 0, pitch: 0};
 };
 
-AudioManager.createBuffer = function(folder, name) {
+AudioManager.createBuffer = function (folder, name) {
     var ext = this.audioFileExt();
     var url = this._path + folder + '/' + encodeURIComponent(name) + ext;
     if (this.shouldUseHtml5Audio() && folder === 'bgm') {
@@ -1301,7 +1302,7 @@ AudioManager.createBuffer = function(folder, name) {
     }
 };
 
-AudioManager.updateBufferParameters = function(buffer, configVolume, audio) {
+AudioManager.updateBufferParameters = function (buffer, configVolume, audio) {
     if (buffer && audio) {
         buffer.volume = configVolume * (audio.volume || 0) / 10000;
         buffer.pitch = (audio.pitch || 0) / 100;
@@ -1309,7 +1310,7 @@ AudioManager.updateBufferParameters = function(buffer, configVolume, audio) {
     }
 };
 
-AudioManager.audioFileExt = function() {
+AudioManager.audioFileExt = function () {
     if (WebAudio.canPlayOgg() && !Utils.isMobileDevice()) {
         return '.ogg';
     } else {
@@ -1317,25 +1318,25 @@ AudioManager.audioFileExt = function() {
     }
 };
 
-AudioManager.shouldUseHtml5Audio = function() {
+AudioManager.shouldUseHtml5Audio = function () {
     // We use HTML5 Audio to play BGM instead of Web Audio API
     // because decodeAudioData() is very slow on Android Chrome.
     return Utils.isAndroidChrome();
 };
 
-AudioManager.checkErrors = function() {
+AudioManager.checkErrors = function () {
     this.checkWebAudioError(this._bgmBuffer);
     this.checkWebAudioError(this._bgsBuffer);
     this.checkWebAudioError(this._meBuffer);
-    this._seBuffers.forEach(function(buffer) {
+    this._seBuffers.forEach(function (buffer) {
         this.checkWebAudioError(buffer);
     }.bind(this));
-    this._staticBuffers.forEach(function(buffer) {
+    this._staticBuffers.forEach(function (buffer) {
         this.checkWebAudioError(buffer);
     }.bind(this));
 };
 
-AudioManager.checkWebAudioError = function(webAudio) {
+AudioManager.checkWebAudioError = function (webAudio) {
     if (webAudio && webAudio.isError()) {
         throw new Error('Failed to load: ' + webAudio.url);
     }
@@ -1350,118 +1351,118 @@ function SoundManager() {
     throw new Error('This is a static class');
 }
 
-SoundManager.preloadImportantSounds = function() {
+SoundManager.preloadImportantSounds = function () {
     this.loadSystemSound(0);
     this.loadSystemSound(1);
     this.loadSystemSound(2);
     this.loadSystemSound(3);
 };
 
-SoundManager.loadSystemSound = function(n) {
+SoundManager.loadSystemSound = function (n) {
     if ($dataSystem) {
         AudioManager.loadStaticSe($dataSystem.sounds[n]);
     }
 };
 
-SoundManager.playSystemSound = function(n) {
+SoundManager.playSystemSound = function (n) {
     if ($dataSystem) {
         AudioManager.playStaticSe($dataSystem.sounds[n]);
     }
 };
 
-SoundManager.playCursor = function() {
+SoundManager.playCursor = function () {
     this.playSystemSound(0);
 };
 
-SoundManager.playOk = function() {
+SoundManager.playOk = function () {
     this.playSystemSound(1);
 };
 
-SoundManager.playCancel = function() {
+SoundManager.playCancel = function () {
     this.playSystemSound(2);
 };
 
-SoundManager.playBuzzer = function() {
+SoundManager.playBuzzer = function () {
     this.playSystemSound(3);
 };
 
-SoundManager.playEquip = function() {
+SoundManager.playEquip = function () {
     this.playSystemSound(4);
 };
 
-SoundManager.playSave = function() {
+SoundManager.playSave = function () {
     this.playSystemSound(5);
 };
 
-SoundManager.playLoad = function() {
+SoundManager.playLoad = function () {
     this.playSystemSound(6);
 };
 
-SoundManager.playBattleStart = function() {
+SoundManager.playBattleStart = function () {
     this.playSystemSound(7);
 };
 
-SoundManager.playEscape = function() {
+SoundManager.playEscape = function () {
     this.playSystemSound(8);
 };
 
-SoundManager.playEnemyAttack = function() {
+SoundManager.playEnemyAttack = function () {
     this.playSystemSound(9);
 };
 
-SoundManager.playEnemyDamage = function() {
+SoundManager.playEnemyDamage = function () {
     this.playSystemSound(10);
 };
 
-SoundManager.playEnemyCollapse = function() {
+SoundManager.playEnemyCollapse = function () {
     this.playSystemSound(11);
 };
 
-SoundManager.playBossCollapse1 = function() {
+SoundManager.playBossCollapse1 = function () {
     this.playSystemSound(12);
 };
 
-SoundManager.playBossCollapse2 = function() {
+SoundManager.playBossCollapse2 = function () {
     this.playSystemSound(13);
 };
 
-SoundManager.playActorDamage = function() {
+SoundManager.playActorDamage = function () {
     this.playSystemSound(14);
 };
 
-SoundManager.playActorCollapse = function() {
+SoundManager.playActorCollapse = function () {
     this.playSystemSound(15);
 };
 
-SoundManager.playRecovery = function() {
+SoundManager.playRecovery = function () {
     this.playSystemSound(16);
 };
 
-SoundManager.playMiss = function() {
+SoundManager.playMiss = function () {
     this.playSystemSound(17);
 };
 
-SoundManager.playEvasion = function() {
+SoundManager.playEvasion = function () {
     this.playSystemSound(18);
 };
 
-SoundManager.playMagicEvasion = function() {
+SoundManager.playMagicEvasion = function () {
     this.playSystemSound(19);
 };
 
-SoundManager.playReflection = function() {
+SoundManager.playReflection = function () {
     this.playSystemSound(20);
 };
 
-SoundManager.playShop = function() {
+SoundManager.playShop = function () {
     this.playSystemSound(21);
 };
 
-SoundManager.playUseItem = function() {
+SoundManager.playUseItem = function () {
     this.playSystemSound(22);
 };
 
-SoundManager.playUseSkill = function() {
+SoundManager.playUseSkill = function () {
     this.playSystemSound(23);
 };
 
@@ -1474,25 +1475,25 @@ function TextManager() {
     throw new Error('This is a static class');
 }
 
-TextManager.basic = function(basicId) {
+TextManager.basic = function (basicId) {
     return $dataSystem.terms.basic[basicId] || '';
 };
 
-TextManager.param = function(paramId) {
+TextManager.param = function (paramId) {
     return $dataSystem.terms.params[paramId] || '';
 };
 
-TextManager.command = function(commandId) {
+TextManager.command = function (commandId) {
     return $dataSystem.terms.commands[commandId] || '';
 };
 
-TextManager.message = function(messageId) {
+TextManager.message = function (messageId) {
     return $dataSystem.terms.messages[messageId] || '';
 };
 
-TextManager.getter = function(method, param) {
+TextManager.getter = function (method, param) {
     return {
-        get: function() {
+        get: function () {
             return this[method](param);
         },
         configurable: true
@@ -1500,96 +1501,98 @@ TextManager.getter = function(method, param) {
 };
 
 Object.defineProperty(TextManager, 'currencyUnit', {
-    get: function() { return $dataSystem.currencyUnit; },
+    get: function () {
+        return $dataSystem.currencyUnit;
+    },
     configurable: true
 });
 
 Object.defineProperties(TextManager, {
-    level           : TextManager.getter('basic', 0),
-    levelA          : TextManager.getter('basic', 1),
-    hp              : TextManager.getter('basic', 2),
-    hpA             : TextManager.getter('basic', 3),
-    mp              : TextManager.getter('basic', 4),
-    mpA             : TextManager.getter('basic', 5),
-    tp              : TextManager.getter('basic', 6),
-    tpA             : TextManager.getter('basic', 7),
-    exp             : TextManager.getter('basic', 8),
-    expA            : TextManager.getter('basic', 9),
-    fight           : TextManager.getter('command', 0),
-    escape          : TextManager.getter('command', 1),
-    attack          : TextManager.getter('command', 2),
-    guard           : TextManager.getter('command', 3),
-    item            : TextManager.getter('command', 4),
-    skill           : TextManager.getter('command', 5),
-    equip           : TextManager.getter('command', 6),
-    status          : TextManager.getter('command', 7),
-    formation       : TextManager.getter('command', 8),
-    save            : TextManager.getter('command', 9),
-    gameEnd         : TextManager.getter('command', 10),
-    options         : TextManager.getter('command', 11),
-    weapon          : TextManager.getter('command', 12),
-    armor           : TextManager.getter('command', 13),
-    keyItem         : TextManager.getter('command', 14),
-    equip2          : TextManager.getter('command', 15),
-    optimize        : TextManager.getter('command', 16),
-    clear           : TextManager.getter('command', 17),
-    newGame         : TextManager.getter('command', 18),
-    continue_       : TextManager.getter('command', 19),
-    toTitle         : TextManager.getter('command', 21),
-    cancel          : TextManager.getter('command', 22),
-    buy             : TextManager.getter('command', 24),
-    sell            : TextManager.getter('command', 25),
-    alwaysDash      : TextManager.getter('message', 'alwaysDash'),
-    commandRemember : TextManager.getter('message', 'commandRemember'),
-    bgmVolume       : TextManager.getter('message', 'bgmVolume'),
-    bgsVolume       : TextManager.getter('message', 'bgsVolume'),
-    meVolume        : TextManager.getter('message', 'meVolume'),
-    seVolume        : TextManager.getter('message', 'seVolume'),
-    possession      : TextManager.getter('message', 'possession'),
-    expTotal        : TextManager.getter('message', 'expTotal'),
-    expNext         : TextManager.getter('message', 'expNext'),
-    saveMessage     : TextManager.getter('message', 'saveMessage'),
-    loadMessage     : TextManager.getter('message', 'loadMessage'),
-    file            : TextManager.getter('message', 'file'),
-    partyName       : TextManager.getter('message', 'partyName'),
-    emerge          : TextManager.getter('message', 'emerge'),
-    preemptive      : TextManager.getter('message', 'preemptive'),
-    surprise        : TextManager.getter('message', 'surprise'),
-    escapeStart     : TextManager.getter('message', 'escapeStart'),
-    escapeFailure   : TextManager.getter('message', 'escapeFailure'),
-    victory         : TextManager.getter('message', 'victory'),
-    defeat          : TextManager.getter('message', 'defeat'),
-    obtainExp       : TextManager.getter('message', 'obtainExp'),
-    obtainGold      : TextManager.getter('message', 'obtainGold'),
-    obtainItem      : TextManager.getter('message', 'obtainItem'),
-    levelUp         : TextManager.getter('message', 'levelUp'),
-    obtainSkill     : TextManager.getter('message', 'obtainSkill'),
-    useItem         : TextManager.getter('message', 'useItem'),
-    criticalToEnemy : TextManager.getter('message', 'criticalToEnemy'),
-    criticalToActor : TextManager.getter('message', 'criticalToActor'),
-    actorDamage     : TextManager.getter('message', 'actorDamage'),
-    actorRecovery   : TextManager.getter('message', 'actorRecovery'),
-    actorGain       : TextManager.getter('message', 'actorGain'),
-    actorLoss       : TextManager.getter('message', 'actorLoss'),
-    actorDrain      : TextManager.getter('message', 'actorDrain'),
-    actorNoDamage   : TextManager.getter('message', 'actorNoDamage'),
-    actorNoHit      : TextManager.getter('message', 'actorNoHit'),
-    enemyDamage     : TextManager.getter('message', 'enemyDamage'),
-    enemyRecovery   : TextManager.getter('message', 'enemyRecovery'),
-    enemyGain       : TextManager.getter('message', 'enemyGain'),
-    enemyLoss       : TextManager.getter('message', 'enemyLoss'),
-    enemyDrain      : TextManager.getter('message', 'enemyDrain'),
-    enemyNoDamage   : TextManager.getter('message', 'enemyNoDamage'),
-    enemyNoHit      : TextManager.getter('message', 'enemyNoHit'),
-    evasion         : TextManager.getter('message', 'evasion'),
-    magicEvasion    : TextManager.getter('message', 'magicEvasion'),
-    magicReflection : TextManager.getter('message', 'magicReflection'),
-    counterAttack   : TextManager.getter('message', 'counterAttack'),
-    substitute      : TextManager.getter('message', 'substitute'),
-    buffAdd         : TextManager.getter('message', 'buffAdd'),
-    debuffAdd       : TextManager.getter('message', 'debuffAdd'),
-    buffRemove      : TextManager.getter('message', 'buffRemove'),
-    actionFailure   : TextManager.getter('message', 'actionFailure'),
+    level: TextManager.getter('basic', 0),
+    levelA: TextManager.getter('basic', 1),
+    hp: TextManager.getter('basic', 2),
+    hpA: TextManager.getter('basic', 3),
+    mp: TextManager.getter('basic', 4),
+    mpA: TextManager.getter('basic', 5),
+    tp: TextManager.getter('basic', 6),
+    tpA: TextManager.getter('basic', 7),
+    exp: TextManager.getter('basic', 8),
+    expA: TextManager.getter('basic', 9),
+    fight: TextManager.getter('command', 0),
+    escape: TextManager.getter('command', 1),
+    attack: TextManager.getter('command', 2),
+    guard: TextManager.getter('command', 3),
+    item: TextManager.getter('command', 4),
+    skill: TextManager.getter('command', 5),
+    equip: TextManager.getter('command', 6),
+    status: TextManager.getter('command', 7),
+    formation: TextManager.getter('command', 8),
+    save: TextManager.getter('command', 9),
+    gameEnd: TextManager.getter('command', 10),
+    options: TextManager.getter('command', 11),
+    weapon: TextManager.getter('command', 12),
+    armor: TextManager.getter('command', 13),
+    keyItem: TextManager.getter('command', 14),
+    equip2: TextManager.getter('command', 15),
+    optimize: TextManager.getter('command', 16),
+    clear: TextManager.getter('command', 17),
+    newGame: TextManager.getter('command', 18),
+    continue_: TextManager.getter('command', 19),
+    toTitle: TextManager.getter('command', 21),
+    cancel: TextManager.getter('command', 22),
+    buy: TextManager.getter('command', 24),
+    sell: TextManager.getter('command', 25),
+    alwaysDash: TextManager.getter('message', 'alwaysDash'),
+    commandRemember: TextManager.getter('message', 'commandRemember'),
+    bgmVolume: TextManager.getter('message', 'bgmVolume'),
+    bgsVolume: TextManager.getter('message', 'bgsVolume'),
+    meVolume: TextManager.getter('message', 'meVolume'),
+    seVolume: TextManager.getter('message', 'seVolume'),
+    possession: TextManager.getter('message', 'possession'),
+    expTotal: TextManager.getter('message', 'expTotal'),
+    expNext: TextManager.getter('message', 'expNext'),
+    saveMessage: TextManager.getter('message', 'saveMessage'),
+    loadMessage: TextManager.getter('message', 'loadMessage'),
+    file: TextManager.getter('message', 'file'),
+    partyName: TextManager.getter('message', 'partyName'),
+    emerge: TextManager.getter('message', 'emerge'),
+    preemptive: TextManager.getter('message', 'preemptive'),
+    surprise: TextManager.getter('message', 'surprise'),
+    escapeStart: TextManager.getter('message', 'escapeStart'),
+    escapeFailure: TextManager.getter('message', 'escapeFailure'),
+    victory: TextManager.getter('message', 'victory'),
+    defeat: TextManager.getter('message', 'defeat'),
+    obtainExp: TextManager.getter('message', 'obtainExp'),
+    obtainGold: TextManager.getter('message', 'obtainGold'),
+    obtainItem: TextManager.getter('message', 'obtainItem'),
+    levelUp: TextManager.getter('message', 'levelUp'),
+    obtainSkill: TextManager.getter('message', 'obtainSkill'),
+    useItem: TextManager.getter('message', 'useItem'),
+    criticalToEnemy: TextManager.getter('message', 'criticalToEnemy'),
+    criticalToActor: TextManager.getter('message', 'criticalToActor'),
+    actorDamage: TextManager.getter('message', 'actorDamage'),
+    actorRecovery: TextManager.getter('message', 'actorRecovery'),
+    actorGain: TextManager.getter('message', 'actorGain'),
+    actorLoss: TextManager.getter('message', 'actorLoss'),
+    actorDrain: TextManager.getter('message', 'actorDrain'),
+    actorNoDamage: TextManager.getter('message', 'actorNoDamage'),
+    actorNoHit: TextManager.getter('message', 'actorNoHit'),
+    enemyDamage: TextManager.getter('message', 'enemyDamage'),
+    enemyRecovery: TextManager.getter('message', 'enemyRecovery'),
+    enemyGain: TextManager.getter('message', 'enemyGain'),
+    enemyLoss: TextManager.getter('message', 'enemyLoss'),
+    enemyDrain: TextManager.getter('message', 'enemyDrain'),
+    enemyNoDamage: TextManager.getter('message', 'enemyNoDamage'),
+    enemyNoHit: TextManager.getter('message', 'enemyNoHit'),
+    evasion: TextManager.getter('message', 'evasion'),
+    magicEvasion: TextManager.getter('message', 'magicEvasion'),
+    magicReflection: TextManager.getter('message', 'magicReflection'),
+    counterAttack: TextManager.getter('message', 'counterAttack'),
+    substitute: TextManager.getter('message', 'substitute'),
+    buffAdd: TextManager.getter('message', 'buffAdd'),
+    debuffAdd: TextManager.getter('message', 'debuffAdd'),
+    buffRemove: TextManager.getter('message', 'buffRemove'),
+    actionFailure: TextManager.getter('message', 'actionFailure'),
 });
 
 //-----------------------------------------------------------------------------
@@ -1606,27 +1609,27 @@ function SceneManager() {
  * Gets the current time in ms.
  * @private
  */
-SceneManager._getTimeInMs = function() {
+SceneManager._getTimeInMs = function () {
     return performance.now();
 };
 
 //当前场景
-SceneManager._scene             = null;
+SceneManager._scene = null;
 //下一个场景，内部使用轮询来进行当前场景和下一个场景的切换
-SceneManager._nextScene         = null;
+SceneManager._nextScene = null;
 //场景栈
-SceneManager._stack             = [];
+SceneManager._stack = [];
 //是否停止
-SceneManager._stopped           = false;
-SceneManager._sceneStarted      = false;
-SceneManager._exiting           = false;
-SceneManager._previousClass     = null;
-SceneManager._backgroundBitmap  = null;
+SceneManager._stopped = false;
+SceneManager._sceneStarted = false;
+SceneManager._exiting = false;
+SceneManager._previousClass = null;
+SceneManager._backgroundBitmap = null;
 //宽高数据
-SceneManager._screenWidth       = 816;
-SceneManager._screenHeight      = 624;
-SceneManager._boxWidth          = 816;
-SceneManager._boxHeight         = 624;
+SceneManager._screenWidth = 816;
+SceneManager._screenHeight = 624;
+SceneManager._boxWidth = 816;
+SceneManager._boxHeight = 624;
 /**
  * 刷新频率
  * @type {number}
@@ -1641,7 +1644,7 @@ SceneManager._accumulator = 0.0;
  * 主系统运行
  * @param sceneClass
  */
-SceneManager.run = function(sceneClass) {
+SceneManager.run = function (sceneClass) {
     try {
         //初始化主系统
         this.initialize();
@@ -1658,7 +1661,7 @@ SceneManager.run = function(sceneClass) {
  * 初始化SceneManager
  * （其实他这里的子系统层级架构分的有问题）
  */
-SceneManager.initialize = function() {
+SceneManager.initialize = function () {
     //初始化图形子系统
     this.initGraphics();
     //检测是否可以读写游戏文件
@@ -1677,7 +1680,7 @@ SceneManager.initialize = function() {
 /**
  * 初始化渲染器
  */
-SceneManager.initGraphics = function() {
+SceneManager.initGraphics = function () {
 
     //根据当前上下文 获取底层渲染机智(webgl或者canvas)
     var type = this.preferableRendererType();
@@ -1703,7 +1706,7 @@ SceneManager.initGraphics = function() {
  * canvas 或者webgal
  * @returns {*}
  */
-SceneManager.preferableRendererType = function() {
+SceneManager.preferableRendererType = function () {
     if (Utils.isOptionValid('canvas')) {
         return 'canvas';
     } else if (Utils.isOptionValid('webgl')) {
@@ -1715,11 +1718,11 @@ SceneManager.preferableRendererType = function() {
     }
 };
 
-SceneManager.shouldUseCanvasRenderer = function() {
+SceneManager.shouldUseCanvasRenderer = function () {
     return Utils.isMobileDevice();
 };
 
-SceneManager.checkWebGL = function() {
+SceneManager.checkWebGL = function () {
     if (!Graphics.hasWebGL()) {
         throw new Error('Your browser does not support WebGL.');
     }
@@ -1728,23 +1731,23 @@ SceneManager.checkWebGL = function() {
 /**
  * 检测浏览器是否有权限读取本地文件
  */
-SceneManager.checkFileAccess = function() {
+SceneManager.checkFileAccess = function () {
     if (!Utils.canReadGameFiles()) {
         throw new Error('Your browser does not allow to read local files.');
     }
 
 };
 
-SceneManager.initAudio = function() {
+SceneManager.initAudio = function () {
     //检测是否打开声音选项
-     var noAudio = Utils.isOptionValid('noaudio');
-     //检测浏览器是否支持web audio api
-        if (!WebAudio.initialize(noAudio) && !noAudio) {
-            throw newError('Your browser does not support Web Audio API.');
+    var noAudio = Utils.isOptionValid('noaudio');
+    //检测浏览器是否支持web audio api
+    if (!WebAudio.initialize(noAudio) && !noAudio) {
+        throw newError('Your browser does not support Web Audio API.');
     }
 };
 
-SceneManager.initInput = function() {
+SceneManager.initInput = function () {
     //初始化键盘输入子系统(包含了手柄输入的检测)
     Input.initialize();
     //初始化触摸输入子系统(手机，平板之类的)
@@ -1752,29 +1755,29 @@ SceneManager.initInput = function() {
 };
 
 //nwjs 是一个nodejs上跑的js桌面应用环境，如果游戏是本地运行而不是在浏览器上运行，需要该库的支持
-SceneManager.initNwjs = function() {
+SceneManager.initNwjs = function () {
     if (Utils.isNwjs()) {
         var gui = require('nw.gui');
         var win = gui.Window.get();
         if (process.platform === 'darwin' && !win.menu) {
-            var menubar = new gui.Menu({ type: 'menubar' });
-            var option = { hideEdit: true, hideWindow: true };
+            var menubar = new gui.Menu({type: 'menubar'});
+            var option = {hideEdit: true, hideWindow: true};
             menubar.createMacBuiltin('Game', option);
             win.menu = menubar;
         }
     }
 };
 
-SceneManager.checkPluginErrors = function() {
+SceneManager.checkPluginErrors = function () {
     PluginManager.checkErrors();
 };
 
-SceneManager.setupErrorHandlers = function() {
+SceneManager.setupErrorHandlers = function () {
     window.addEventListener('error', this.onError.bind(this));
     document.addEventListener('keydown', this.onKeyDown.bind(this));
 };
 
-SceneManager.requestUpdate = function() {
+SceneManager.requestUpdate = function () {
     if (!this._stopped) {
         requestAnimationFrame(this.update.bind(this));
     }
@@ -1783,7 +1786,7 @@ SceneManager.requestUpdate = function() {
 /**
  * 主循环
  */
-SceneManager.update = function() {
+SceneManager.update = function () {
     try {
         //计时开始 他这里的更新可能是跟unity的时间间隔式(update)差不多而不是锁定时间的循环(fixupdate)
         this.tickStart();
@@ -1796,7 +1799,7 @@ SceneManager.update = function() {
     }
 };
 
-SceneManager.terminate = function() {
+SceneManager.terminate = function () {
     window.close();
 };
 
@@ -1804,7 +1807,7 @@ SceneManager.terminate = function() {
  * 错误时调用
  * @param e
  */
-SceneManager.onError = function(e) {
+SceneManager.onError = function (e) {
     //控制台中打印错误
     console.error(e.message);
     console.error(e.filename, e.lineno);
@@ -1818,7 +1821,7 @@ SceneManager.onError = function(e) {
     }
 };
 
-SceneManager.onKeyDown = function(event) {
+SceneManager.onKeyDown = function (event) {
     if (!event.ctrlKey && !event.altKey) {
         switch (event.keyCode) {
             case 116:   // F5
@@ -1835,7 +1838,7 @@ SceneManager.onKeyDown = function(event) {
     }
 };
 
-SceneManager.catchException = function(e) {
+SceneManager.catchException = function (e) {
     if (e instanceof Error) {
         Graphics.printError(e.name, e.message);
         console.error(e.stack);
@@ -1846,15 +1849,15 @@ SceneManager.catchException = function(e) {
     this.stop();
 };
 
-SceneManager.tickStart = function() {
+SceneManager.tickStart = function () {
     Graphics.tickStart();
 };
 
-SceneManager.tickEnd = function() {
+SceneManager.tickEnd = function () {
     Graphics.tickEnd();
 };
 
-SceneManager.updateInputData = function() {
+SceneManager.updateInputData = function () {
     Input.update();
     TouchInput.update();
 };
@@ -1862,12 +1865,12 @@ SceneManager.updateInputData = function() {
 /**
  * 主循环
  */
-SceneManager.updateMain = function() {
+SceneManager.updateMain = function () {
 
     //计算距离上一帧所经过的时间
     //这里把最低帧数锁定在了40
     var newTime = this._getTimeInMs();
-    var fTime =  (newTime - this._currentTime) / 1000;
+    var fTime = (newTime - this._currentTime) / 1000;
     if (fTime > 0.25) fTime = 0.25;
     this._currentTime = newTime;
     this._accumulator += fTime;
@@ -1889,7 +1892,7 @@ SceneManager.updateMain = function() {
     this.requestUpdate();
 };
 
-SceneManager.changeScene = function() {
+SceneManager.changeScene = function () {
     //是否当前需要进行场景切换
     //是否有nextScene存在以及当前场景不在busy状态
     if (this.isSceneChanging() && !this.isCurrentSceneBusy()) {
@@ -1913,7 +1916,7 @@ SceneManager.changeScene = function() {
     }
 };
 
-SceneManager.updateScene = function() {
+SceneManager.updateScene = function () {
     if (this._scene) {
         if (!this._sceneStarted && this._scene.isReady()) {
             this._scene.start();
@@ -1929,34 +1932,34 @@ SceneManager.updateScene = function() {
 /**
  * 渲染scene
  */
-SceneManager.renderScene = function() {
+SceneManager.renderScene = function () {
     //如果当前scene加载完毕 交由底层pixi渲染器渲染
     if (this.isCurrentSceneStarted()) {
         Graphics.render(this._scene);
     }
-        //否则显示加载画面
-        else if (this._scene) {
+    //否则显示加载画面
+    else if (this._scene) {
         this.onSceneLoading();
     }
 };
 
-SceneManager.onSceneCreate = function() {
+SceneManager.onSceneCreate = function () {
     Graphics.startLoading();
 };
 
-SceneManager.onSceneStart = function() {
+SceneManager.onSceneStart = function () {
     Graphics.endLoading();
 };
 
-SceneManager.onSceneLoading = function() {
+SceneManager.onSceneLoading = function () {
     Graphics.updateLoading();
 };
 
-SceneManager.isSceneChanging = function() {
+SceneManager.isSceneChanging = function () {
     return this._exiting || !!this._nextScene;
 };
 
-SceneManager.isCurrentSceneBusy = function() {
+SceneManager.isCurrentSceneBusy = function () {
     return this._scene && this._scene.isBusy();
 };
 
@@ -1964,15 +1967,15 @@ SceneManager.isCurrentSceneBusy = function() {
  * 当前场景是否加载完毕
  * @returns {null|*|boolean}
  */
-SceneManager.isCurrentSceneStarted = function() {
+SceneManager.isCurrentSceneStarted = function () {
     return this._scene && this._sceneStarted;
 };
 
-SceneManager.isNextScene = function(sceneClass) {
+SceneManager.isNextScene = function (sceneClass) {
     return this._nextScene && this._nextScene.constructor === sceneClass;
 };
 
-SceneManager.isPreviousScene = function(sceneClass) {
+SceneManager.isPreviousScene = function (sceneClass) {
     return this._previousClass === sceneClass;
 };
 
@@ -1980,7 +1983,7 @@ SceneManager.isPreviousScene = function(sceneClass) {
  * 在场景之间跳转
  * @param sceneClass
  */
-SceneManager.goto = function(sceneClass) {
+SceneManager.goto = function (sceneClass) {
     if (sceneClass) {
         //设置下一个场景为传入的参数
         this._nextScene = new sceneClass();
@@ -1991,12 +1994,12 @@ SceneManager.goto = function(sceneClass) {
     }
 };
 
-SceneManager.push = function(sceneClass) {
+SceneManager.push = function (sceneClass) {
     this._stack.push(this._scene.constructor);
     this.goto(sceneClass);
 };
 
-SceneManager.pop = function() {
+SceneManager.pop = function () {
     if (this._stack.length > 0) {
         this.goto(this._stack.pop());
     } else {
@@ -2004,33 +2007,33 @@ SceneManager.pop = function() {
     }
 };
 
-SceneManager.exit = function() {
+SceneManager.exit = function () {
     this.goto(null);
     this._exiting = true;
 };
 
-SceneManager.clearStack = function() {
+SceneManager.clearStack = function () {
     this._stack = [];
 };
 
-SceneManager.stop = function() {
+SceneManager.stop = function () {
     this._stopped = true;
 };
 
-SceneManager.prepareNextScene = function() {
+SceneManager.prepareNextScene = function () {
     this._nextScene.prepare.apply(this._nextScene, arguments);
 };
 
-SceneManager.snap = function() {
+SceneManager.snap = function () {
     return Bitmap.snap(this._scene);
 };
 
-SceneManager.snapForBackground = function() {
+SceneManager.snapForBackground = function () {
     this._backgroundBitmap = this.snap();
     this._backgroundBitmap.blur();
 };
 
-SceneManager.backgroundBitmap = function() {
+SceneManager.backgroundBitmap = function () {
     return this._backgroundBitmap;
 };
 
@@ -2044,7 +2047,7 @@ function BattleManager() {
     throw new Error('This is a static class');
 }
 
-BattleManager.setup = function(troopId, canEscape, canLose) {
+BattleManager.setup = function (troopId, canEscape, canLose) {
     this.initMembers();
     this._canEscape = canEscape;
     this._canLose = canLose;
@@ -2053,7 +2056,7 @@ BattleManager.setup = function(troopId, canEscape, canLose) {
     this.makeEscapeRatio();
 };
 
-BattleManager.initMembers = function() {
+BattleManager.initMembers = function () {
     this._phase = 'init';
     this._canEscape = false;
     this._canLose = false;
@@ -2077,62 +2080,62 @@ BattleManager.initMembers = function() {
     this._rewards = {};
 };
 
-BattleManager.isBattleTest = function() {
+BattleManager.isBattleTest = function () {
     return this._battleTest;
 };
 
-BattleManager.setBattleTest = function(battleTest) {
+BattleManager.setBattleTest = function (battleTest) {
     this._battleTest = battleTest;
 };
 
-BattleManager.setEventCallback = function(callback) {
+BattleManager.setEventCallback = function (callback) {
     this._eventCallback = callback;
 };
 
-BattleManager.setLogWindow = function(logWindow) {
+BattleManager.setLogWindow = function (logWindow) {
     this._logWindow = logWindow;
 };
 
-BattleManager.setStatusWindow = function(statusWindow) {
+BattleManager.setStatusWindow = function (statusWindow) {
     this._statusWindow = statusWindow;
 };
 
-BattleManager.setSpriteset = function(spriteset) {
+BattleManager.setSpriteset = function (spriteset) {
     this._spriteset = spriteset;
 };
 
-BattleManager.onEncounter = function() {
+BattleManager.onEncounter = function () {
     this._preemptive = (Math.random() < this.ratePreemptive());
     this._surprise = (Math.random() < this.rateSurprise() && !this._preemptive);
 };
 
-BattleManager.ratePreemptive = function() {
+BattleManager.ratePreemptive = function () {
     return $gameParty.ratePreemptive($gameTroop.agility());
 };
 
-BattleManager.rateSurprise = function() {
+BattleManager.rateSurprise = function () {
     return $gameParty.rateSurprise($gameTroop.agility());
 };
 
-BattleManager.saveBgmAndBgs = function() {
+BattleManager.saveBgmAndBgs = function () {
     this._mapBgm = AudioManager.saveBgm();
     this._mapBgs = AudioManager.saveBgs();
 };
 
-BattleManager.playBattleBgm = function() {
+BattleManager.playBattleBgm = function () {
     AudioManager.playBgm($gameSystem.battleBgm());
     AudioManager.stopBgs();
 };
 
-BattleManager.playVictoryMe = function() {
+BattleManager.playVictoryMe = function () {
     AudioManager.playMe($gameSystem.victoryMe());
 };
 
-BattleManager.playDefeatMe = function() {
+BattleManager.playDefeatMe = function () {
     AudioManager.playMe($gameSystem.defeatMe());
 };
 
-BattleManager.replayBgmAndBgs = function() {
+BattleManager.replayBgmAndBgs = function () {
     if (this._mapBgm) {
         AudioManager.replayBgm(this._mapBgm);
     } else {
@@ -2143,48 +2146,48 @@ BattleManager.replayBgmAndBgs = function() {
     }
 };
 
-BattleManager.makeEscapeRatio = function() {
+BattleManager.makeEscapeRatio = function () {
     this._escapeRatio = 0.5 * $gameParty.agility() / $gameTroop.agility();
 };
 
-BattleManager.update = function() {
+BattleManager.update = function () {
     if (!this.isBusy() && !this.updateEvent()) {
         switch (this._phase) {
-        case 'start':
-            this.startInput();
-            break;
-        case 'turn':
-            this.updateTurn();
-            break;
-        case 'action':
-            this.updateAction();
-            break;
-        case 'turnEnd':
-            this.updateTurnEnd();
-            break;
-        case 'battleEnd':
-            this.updateBattleEnd();
-            break;
+            case 'start':
+                this.startInput();
+                break;
+            case 'turn':
+                this.updateTurn();
+                break;
+            case 'action':
+                this.updateAction();
+                break;
+            case 'turnEnd':
+                this.updateTurnEnd();
+                break;
+            case 'battleEnd':
+                this.updateBattleEnd();
+                break;
         }
     }
 };
 
-BattleManager.updateEvent = function() {
+BattleManager.updateEvent = function () {
     switch (this._phase) {
-    case 'start':
-    case 'turn':
-    case 'turnEnd':
-        if (this.isActionForced()) {
-            this.processForcedAction();
-            return true;
-        } else {
-            return this.updateEventMain();
-        }
+        case 'start':
+        case 'turn':
+        case 'turnEnd':
+            if (this.isActionForced()) {
+                this.processForcedAction();
+                return true;
+            } else {
+                return this.updateEventMain();
+            }
     }
     return this.checkAbort();
 };
 
-BattleManager.updateEventMain = function() {
+BattleManager.updateEventMain = function () {
     $gameTroop.updateInterpreter();
     $gameParty.requestMotionRefresh();
     if ($gameTroop.isEventRunning() || this.checkBattleEnd()) {
@@ -2197,52 +2200,52 @@ BattleManager.updateEventMain = function() {
     return false;
 };
 
-BattleManager.isBusy = function() {
+BattleManager.isBusy = function () {
     return ($gameMessage.isBusy() || this._spriteset.isBusy() ||
-            this._logWindow.isBusy());
+        this._logWindow.isBusy());
 };
 
-BattleManager.isInputting = function() {
+BattleManager.isInputting = function () {
     return this._phase === 'input';
 };
 
-BattleManager.isInTurn = function() {
+BattleManager.isInTurn = function () {
     return this._phase === 'turn';
 };
 
-BattleManager.isTurnEnd = function() {
+BattleManager.isTurnEnd = function () {
     return this._phase === 'turnEnd';
 };
 
-BattleManager.isAborting = function() {
+BattleManager.isAborting = function () {
     return this._phase === 'aborting';
 };
 
-BattleManager.isBattleEnd = function() {
+BattleManager.isBattleEnd = function () {
     return this._phase === 'battleEnd';
 };
 
-BattleManager.canEscape = function() {
+BattleManager.canEscape = function () {
     return this._canEscape;
 };
 
-BattleManager.canLose = function() {
+BattleManager.canLose = function () {
     return this._canLose;
 };
 
-BattleManager.isEscaped = function() {
+BattleManager.isEscaped = function () {
     return this._escaped;
 };
 
-BattleManager.actor = function() {
+BattleManager.actor = function () {
     return this._actorIndex >= 0 ? $gameParty.members()[this._actorIndex] : null;
 };
 
-BattleManager.clearActor = function() {
+BattleManager.clearActor = function () {
     this.changeActor(-1, '');
 };
 
-BattleManager.changeActor = function(newActorIndex, lastActorActionState) {
+BattleManager.changeActor = function (newActorIndex, lastActorActionState) {
     var lastActor = this.actor();
     this._actorIndex = newActorIndex;
     var newActor = this.actor();
@@ -2254,7 +2257,7 @@ BattleManager.changeActor = function(newActorIndex, lastActorActionState) {
     }
 };
 
-BattleManager.startBattle = function() {
+BattleManager.startBattle = function () {
     this._phase = 'start';
     $gameSystem.onBattleStart();
     $gameParty.onBattleStart();
@@ -2262,8 +2265,8 @@ BattleManager.startBattle = function() {
     this.displayStartMessages();
 };
 
-BattleManager.displayStartMessages = function() {
-    $gameTroop.enemyNames().forEach(function(name) {
+BattleManager.displayStartMessages = function () {
+    $gameTroop.enemyNames().forEach(function (name) {
         $gameMessage.add(TextManager.emerge.format(name));
     });
     if (this._preemptive) {
@@ -2273,7 +2276,7 @@ BattleManager.displayStartMessages = function() {
     }
 };
 
-BattleManager.startInput = function() {
+BattleManager.startInput = function () {
     this._phase = 'input';
     $gameParty.makeActions();
     $gameTroop.makeActions();
@@ -2283,11 +2286,11 @@ BattleManager.startInput = function() {
     }
 };
 
-BattleManager.inputtingAction = function() {
+BattleManager.inputtingAction = function () {
     return this.actor() ? this.actor().inputtingAction() : null;
 };
 
-BattleManager.selectNextCommand = function() {
+BattleManager.selectNextCommand = function () {
     do {
         if (!this.actor() || !this.actor().selectNextCommand()) {
             this.changeActor(this._actorIndex + 1, 'waiting');
@@ -2299,7 +2302,7 @@ BattleManager.selectNextCommand = function() {
     } while (!this.actor().canInput());
 };
 
-BattleManager.selectPreviousCommand = function() {
+BattleManager.selectPreviousCommand = function () {
     do {
         if (!this.actor() || !this.actor().selectPreviousCommand()) {
             this.changeActor(this._actorIndex - 1, 'undecided');
@@ -2310,11 +2313,11 @@ BattleManager.selectPreviousCommand = function() {
     } while (!this.actor().canInput());
 };
 
-BattleManager.refreshStatus = function() {
+BattleManager.refreshStatus = function () {
     this._statusWindow.refresh();
 };
 
-BattleManager.startTurn = function() {
+BattleManager.startTurn = function () {
     this._phase = 'turn';
     this.clearActor();
     $gameTroop.increaseTurn();
@@ -2323,7 +2326,7 @@ BattleManager.startTurn = function() {
     this._logWindow.startTurn();
 };
 
-BattleManager.updateTurn = function() {
+BattleManager.updateTurn = function () {
     $gameParty.requestMotionRefresh();
     if (!this._subject) {
         this._subject = this.getNextSubject();
@@ -2335,7 +2338,7 @@ BattleManager.updateTurn = function() {
     }
 };
 
-BattleManager.processTurn = function() {
+BattleManager.processTurn = function () {
     var subject = this._subject;
     var action = subject.currentAction();
     if (action) {
@@ -2354,11 +2357,11 @@ BattleManager.processTurn = function() {
     }
 };
 
-BattleManager.endTurn = function() {
+BattleManager.endTurn = function () {
     this._phase = 'turnEnd';
     this._preemptive = false;
     this._surprise = false;
-    this.allBattleMembers().forEach(function(battler) {
+    this.allBattleMembers().forEach(function (battler) {
         battler.onTurnEnd();
         this.refreshStatus();
         this._logWindow.displayAutoAffectedStatus(battler);
@@ -2366,12 +2369,12 @@ BattleManager.endTurn = function() {
     }, this);
 };
 
-BattleManager.updateTurnEnd = function() {
+BattleManager.updateTurnEnd = function () {
     this.startInput();
 };
 
-BattleManager.getNextSubject = function() {
-    for (;;) {
+BattleManager.getNextSubject = function () {
+    for (; ;) {
         var battler = this._actionBattlers.shift();
         if (!battler) {
             return null;
@@ -2382,11 +2385,11 @@ BattleManager.getNextSubject = function() {
     }
 };
 
-BattleManager.allBattleMembers = function() {
+BattleManager.allBattleMembers = function () {
     return $gameParty.members().concat($gameTroop.members());
 };
 
-BattleManager.makeActionOrders = function() {
+BattleManager.makeActionOrders = function () {
     var battlers = [];
     if (!this._surprise) {
         battlers = battlers.concat($gameParty.members());
@@ -2394,16 +2397,16 @@ BattleManager.makeActionOrders = function() {
     if (!this._preemptive) {
         battlers = battlers.concat($gameTroop.members());
     }
-    battlers.forEach(function(battler) {
+    battlers.forEach(function (battler) {
         battler.makeSpeed();
     });
-    battlers.sort(function(a, b) {
+    battlers.sort(function (a, b) {
         return b.speed() - a.speed();
     });
     this._actionBattlers = battlers;
 };
 
-BattleManager.startAction = function() {
+BattleManager.startAction = function () {
     var subject = this._subject;
     var action = subject.currentAction();
     var targets = action.makeTargets();
@@ -2416,7 +2419,7 @@ BattleManager.startAction = function() {
     this._logWindow.startAction(subject, action, targets);
 };
 
-BattleManager.updateAction = function() {
+BattleManager.updateAction = function () {
     var target = this._targets.shift();
     if (target) {
         this.invokeAction(this._subject, target);
@@ -2425,12 +2428,12 @@ BattleManager.updateAction = function() {
     }
 };
 
-BattleManager.endAction = function() {
+BattleManager.endAction = function () {
     this._logWindow.endAction(this._subject);
     this._phase = 'turn';
 };
 
-BattleManager.invokeAction = function(subject, target) {
+BattleManager.invokeAction = function (subject, target) {
     this._logWindow.push('pushBaseLine');
     if (Math.random() < this._action.itemCnt(target)) {
         this.invokeCounterAttack(subject, target);
@@ -2444,13 +2447,13 @@ BattleManager.invokeAction = function(subject, target) {
     this.refreshStatus();
 };
 
-BattleManager.invokeNormalAction = function(subject, target) {
+BattleManager.invokeNormalAction = function (subject, target) {
     var realTarget = this.applySubstitute(target);
     this._action.apply(realTarget);
     this._logWindow.displayActionResults(subject, realTarget);
 };
 
-BattleManager.invokeCounterAttack = function(subject, target) {
+BattleManager.invokeCounterAttack = function (subject, target) {
     var action = new Game_Action(target);
     action.setAttack();
     action.apply(subject);
@@ -2458,13 +2461,13 @@ BattleManager.invokeCounterAttack = function(subject, target) {
     this._logWindow.displayActionResults(subject, subject);
 };
 
-BattleManager.invokeMagicReflection = function(subject, target) {
+BattleManager.invokeMagicReflection = function (subject, target) {
     this._logWindow.displayReflection(target);
     this._action.apply(subject);
     this._logWindow.displayActionResults(subject, subject);
 };
 
-BattleManager.applySubstitute = function(target) {
+BattleManager.applySubstitute = function (target) {
     if (this.checkSubstitute(target)) {
         var substitute = target.friendsUnit().substituteBattler();
         if (substitute && target !== substitute) {
@@ -2475,15 +2478,15 @@ BattleManager.applySubstitute = function(target) {
     return target;
 };
 
-BattleManager.checkSubstitute = function(target) {
+BattleManager.checkSubstitute = function (target) {
     return target.isDying() && !this._action.isCertainHit();
 };
 
-BattleManager.isActionForced = function() {
+BattleManager.isActionForced = function () {
     return !!this._actionForcedBattler;
 };
 
-BattleManager.forceAction = function(battler) {
+BattleManager.forceAction = function (battler) {
     this._actionForcedBattler = battler;
     var index = this._actionBattlers.indexOf(battler);
     if (index >= 0) {
@@ -2491,7 +2494,7 @@ BattleManager.forceAction = function(battler) {
     }
 };
 
-BattleManager.processForcedAction = function() {
+BattleManager.processForcedAction = function () {
     if (this._actionForcedBattler) {
         this._subject = this._actionForcedBattler;
         this._actionForcedBattler = null;
@@ -2500,11 +2503,11 @@ BattleManager.processForcedAction = function() {
     }
 };
 
-BattleManager.abort = function() {
+BattleManager.abort = function () {
     this._phase = 'aborting';
 };
 
-BattleManager.checkBattleEnd = function() {
+BattleManager.checkBattleEnd = function () {
     if (this._phase) {
         if (this.checkAbort()) {
             return true;
@@ -2519,7 +2522,7 @@ BattleManager.checkBattleEnd = function() {
     return false;
 };
 
-BattleManager.checkAbort = function() {
+BattleManager.checkAbort = function () {
     if ($gameParty.isEmpty() || this.isAborting()) {
         this.processAbort();
         return true;
@@ -2527,7 +2530,7 @@ BattleManager.checkAbort = function() {
     return false;
 };
 
-BattleManager.processVictory = function() {
+BattleManager.processVictory = function () {
     $gameParty.removeBattleStates();
     $gameParty.performVictory();
     this.playVictoryMe();
@@ -2539,7 +2542,7 @@ BattleManager.processVictory = function() {
     this.endBattle(0);
 };
 
-BattleManager.processEscape = function() {
+BattleManager.processEscape = function () {
     $gameParty.performEscape();
     SoundManager.playEscape();
     var success = this._preemptive ? true : (Math.random() < this._escapeRatio);
@@ -2556,13 +2559,13 @@ BattleManager.processEscape = function() {
     return success;
 };
 
-BattleManager.processAbort = function() {
+BattleManager.processAbort = function () {
     $gameParty.removeBattleStates();
     this.replayBgmAndBgs();
     this.endBattle(1);
 };
 
-BattleManager.processDefeat = function() {
+BattleManager.processDefeat = function () {
     this.displayDefeatMessage();
     this.playDefeatMe();
     if (this._canLose) {
@@ -2573,7 +2576,7 @@ BattleManager.processDefeat = function() {
     this.endBattle(2);
 };
 
-BattleManager.endBattle = function(result) {
+BattleManager.endBattle = function (result) {
     this._phase = 'battleEnd';
     if (this._eventCallback) {
         this._eventCallback(result);
@@ -2585,7 +2588,7 @@ BattleManager.endBattle = function(result) {
     }
 };
 
-BattleManager.updateBattleEnd = function() {
+BattleManager.updateBattleEnd = function () {
     if (this.isBattleTest()) {
         AudioManager.stopBgm();
         SceneManager.exit();
@@ -2602,37 +2605,37 @@ BattleManager.updateBattleEnd = function() {
     this._phase = null;
 };
 
-BattleManager.makeRewards = function() {
+BattleManager.makeRewards = function () {
     this._rewards = {};
     this._rewards.gold = $gameTroop.goldTotal();
     this._rewards.exp = $gameTroop.expTotal();
     this._rewards.items = $gameTroop.makeDropItems();
 };
 
-BattleManager.displayVictoryMessage = function() {
+BattleManager.displayVictoryMessage = function () {
     $gameMessage.add(TextManager.victory.format($gameParty.name()));
 };
 
-BattleManager.displayDefeatMessage = function() {
+BattleManager.displayDefeatMessage = function () {
     $gameMessage.add(TextManager.defeat.format($gameParty.name()));
 };
 
-BattleManager.displayEscapeSuccessMessage = function() {
+BattleManager.displayEscapeSuccessMessage = function () {
     $gameMessage.add(TextManager.escapeStart.format($gameParty.name()));
 };
 
-BattleManager.displayEscapeFailureMessage = function() {
+BattleManager.displayEscapeFailureMessage = function () {
     $gameMessage.add(TextManager.escapeStart.format($gameParty.name()));
     $gameMessage.add('\\.' + TextManager.escapeFailure);
 };
 
-BattleManager.displayRewards = function() {
+BattleManager.displayRewards = function () {
     this.displayExp();
     this.displayGold();
     this.displayDropItems();
 };
 
-BattleManager.displayExp = function() {
+BattleManager.displayExp = function () {
     var exp = this._rewards.exp;
     if (exp > 0) {
         var text = TextManager.obtainExp.format(exp, TextManager.exp);
@@ -2640,43 +2643,43 @@ BattleManager.displayExp = function() {
     }
 };
 
-BattleManager.displayGold = function() {
+BattleManager.displayGold = function () {
     var gold = this._rewards.gold;
     if (gold > 0) {
         $gameMessage.add('\\.' + TextManager.obtainGold.format(gold));
     }
 };
 
-BattleManager.displayDropItems = function() {
+BattleManager.displayDropItems = function () {
     var items = this._rewards.items;
     if (items.length > 0) {
         $gameMessage.newPage();
-        items.forEach(function(item) {
+        items.forEach(function (item) {
             $gameMessage.add(TextManager.obtainItem.format(item.name));
         });
     }
 };
 
-BattleManager.gainRewards = function() {
+BattleManager.gainRewards = function () {
     this.gainExp();
     this.gainGold();
     this.gainDropItems();
 };
 
-BattleManager.gainExp = function() {
+BattleManager.gainExp = function () {
     var exp = this._rewards.exp;
-    $gameParty.allMembers().forEach(function(actor) {
+    $gameParty.allMembers().forEach(function (actor) {
         actor.gainExp(exp);
     });
 };
 
-BattleManager.gainGold = function() {
+BattleManager.gainGold = function () {
     $gameParty.gainGold(this._rewards.gold);
 };
 
-BattleManager.gainDropItems = function() {
+BattleManager.gainDropItems = function () {
     var items = this._rewards.items;
-    items.forEach(function(item) {
+    items.forEach(function (item) {
         $gameParty.gainItem(item, 1);
     });
 };
@@ -2691,13 +2694,13 @@ function PluginManager() {
 }
 
 //插件所在的根路径
-PluginManager._path         = 'js/plugins/';
-PluginManager._scripts      = [];
-PluginManager._errorUrls    = [];
-PluginManager._parameters   = {};
+PluginManager._path = 'js/plugins/';
+PluginManager._scripts = [];
+PluginManager._errorUrls = [];
+PluginManager._parameters = {};
 
-PluginManager.setup = function(plugins) {
-    plugins.forEach(function(plugin) {
+PluginManager.setup = function (plugins) {
+    plugins.forEach(function (plugin) {
         if (plugin.status && !this._scripts.contains(plugin.name)) {
             this.setParameters(plugin.name, plugin.parameters);
             this.loadScript(plugin.name + '.js');
@@ -2709,7 +2712,7 @@ PluginManager.setup = function(plugins) {
 /**
  * 检测是否加载正确 如果有插件加载失败 则抛出错误
  */
-PluginManager.checkErrors = function() {
+PluginManager.checkErrors = function () {
     var url = this._errorUrls.shift();
     if (url) {
         throw new Error('Failed to load: ' + url);
@@ -2721,7 +2724,7 @@ PluginManager.checkErrors = function() {
  * @param name
  * @returns {*|{}}
  */
-PluginManager.parameters = function(name) {
+PluginManager.parameters = function (name) {
     return this._parameters[name.toLowerCase()] || {};
 };
 
@@ -2730,12 +2733,12 @@ PluginManager.parameters = function(name) {
  * @param name
  * @param parameters
  */
-PluginManager.setParameters = function(name, parameters) {
+PluginManager.setParameters = function (name, parameters) {
     this._parameters[name.toLowerCase()] = parameters;
 };
 
 //根据文件名加载一个插件
-PluginManager.loadScript = function(name) {
+PluginManager.loadScript = function (name) {
     var url = this._path + name;
     var script = document.createElement('script');
     script.type = 'text/javascript';
@@ -2746,6 +2749,6 @@ PluginManager.loadScript = function(name) {
     document.body.appendChild(script);
 };
 
-PluginManager.onError = function(e) {
+PluginManager.onError = function (e) {
     this._errorUrls.push(e.target._url);
 };
