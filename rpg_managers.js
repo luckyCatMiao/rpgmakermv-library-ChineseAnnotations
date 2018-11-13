@@ -5,7 +5,7 @@
 //
 //-----------------------------------------------------------------------------
 // DataManager
-// 数据文件加载器  加载完成之后就分发数据给不同的子管理器
+// 数据文件加载器  加载ide导出的json文件然后解析，加载完成之后就分发数据给不同的子管理器
 // The static class that manages the database and game objects.
 
 //数据管理器
@@ -50,6 +50,8 @@ DataManager._globalId = 'RPGMV';
 DataManager._lastAccessedId = 1;
 DataManager._errorUrl = null;
 
+//一份映射
+//其实我感觉应该单独再单独写一份json文件保存映射，然后加载那个文件做二段parse，而不是像这样把映射写死在代码里
 DataManager._databaseFiles = [
     {name: '$dataActors', src: 'Actors.json'},
     {name: '$dataClasses', src: 'Classes.json'},
@@ -71,30 +73,37 @@ DataManager._databaseFiles = [
  * 加载json数据
  */
 DataManager.loadDatabase = function () {
+    //现在是否在测试?
     var test = this.isBattleTest() || this.isEventTest();
+    //设置前缀
     var prefix = test ? 'Test_' : '';
+    //加载数据文件
     for (var i = 0; i < this._databaseFiles.length; i++) {
         var name = this._databaseFiles[i].name;
         var src = this._databaseFiles[i].src;
         this.loadDataFile(name, prefix + src);
     }
+    //事件测试额外加载一份测试事件数据
     if (this.isEventTest()) {
         this.loadDataFile('$testEvent', prefix + 'Event.json');
     }
 };
 
 /**
- * 加载数据文件
+ * 加载所有数据文件
  * @param name
  * @param src
  */
 DataManager.loadDataFile = function (name, src) {
+    //不懂他为何每次都要写一遍网络请求而不弄一个工具类？
     var xhr = new XMLHttpRequest();
     var url = 'data/' + src;
     xhr.open('GET', url);
     xhr.overrideMimeType('application/json');
     xhr.onload = function () {
+        //这里其实有点问题，因为200-299的返回值在http协议里才是有正常的响应,300-399是重定位
         if (xhr.status < 400) {
+            //这里直接把加载完成返回的js代码文本挂载到window上了？
             window[name] = JSON.parse(xhr.responseText);
             DataManager.onLoad(window[name]);
         }
@@ -104,13 +113,12 @@ DataManager.loadDataFile = function (name, src) {
         DataManager._errorUrl = DataManager._errorUrl || url;
     };
 
-    //覆盖之前的数据
     window[name] = null;
     xhr.send();
 };
 
 /**
- * 是否加载完成
+ * 是否所有数据加载完成
  * @returns {boolean}
  */
 DataManager.isDatabaseLoaded = function () {
@@ -128,6 +136,7 @@ DataManager.isDatabaseLoaded = function () {
  * @param mapId
  */
 DataManager.loadMapData = function (mapId) {
+    //如果mapid大于0(在ide中导出的地图id都大于0)，则加载该地图，否则返回一份空地图(为什么它不报错- -)
     if (mapId > 0) {
         var filename = 'Map%1.json'.format(mapId.padZero(3));
         this.loadDataFile('$dataMap', filename);
@@ -1641,7 +1650,7 @@ SceneManager._currentTime = SceneManager._getTimeInMs();
 SceneManager._accumulator = 0.0;
 
 /**
- * 主系统运行
+ *运行一个场景
  * @param sceneClass
  */
 SceneManager.run = function (sceneClass) {
@@ -2695,14 +2704,20 @@ function PluginManager() {
 
 //插件所在的根路径
 PluginManager._path = 'js/plugins/';
+//这里保存的只是所有脚本的名字,用来比对重复加载和查询
 PluginManager._scripts = [];
+//保存加载失败插件的url
 PluginManager._errorUrls = [];
+//所有待设置的参数
 PluginManager._parameters = {};
 
+//初始化
 PluginManager.setup = function (plugins) {
     plugins.forEach(function (plugin) {
         if (plugin.status && !this._scripts.contains(plugin.name)) {
+            //填充参数
             this.setParameters(plugin.name, plugin.parameters);
+            //加载
             this.loadScript(plugin.name + '.js');
             this._scripts.push(plugin.name);
         }
@@ -2720,7 +2735,7 @@ PluginManager.checkErrors = function () {
 };
 
 /**
- * 根据key获取value
+ * 获取插件的设置值，这个应该是在ide里面设置好之后ide会导出一份json数据，然后再加载进来
  * @param name
  * @returns {*|{}}
  */
@@ -2739,7 +2754,9 @@ PluginManager.setParameters = function (name, parameters) {
 
 //根据文件名加载一个插件
 PluginManager.loadScript = function (name) {
+    //路径为基础文件夹路径加上文件名
     var url = this._path + name;
+    //加载方式是使用挂载script节点到html上，顺便这个在桌面环境上也是可以用的
     var script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = url;

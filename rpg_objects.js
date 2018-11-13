@@ -4558,7 +4558,7 @@ Game_Enemy.prototype.makeActions = function() {
 // Game_Actors
 //
 // The wrapper class for an actor array.
-
+//对底层的actor数据做了简单的包装
 function Game_Actors() {
     this.initialize.apply(this, arguments);
 }
@@ -7479,6 +7479,7 @@ Game_Player.prototype.performTransfer = function() {
 };
 
 Game_Player.prototype.isMapPassable = function(x, y, d) {
+    //这里先当前是否有交通工具，因为交通工具对某些图块有特殊的通行性
     var vehicle = this.vehicle();
     if (vehicle) {
         return vehicle.isMapPassable(x, y, d);
