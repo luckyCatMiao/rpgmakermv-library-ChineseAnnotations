@@ -7,14 +7,13 @@
 //
 // The superclass of all scenes within the game.
 //场景基类 这里的场景概念和unity里的scene flash里的关键帧(或者说场景)类似
-//不过他居然把scene又做成一个大的displaycontainer...
+//  不过他居然把scene又做成一个大的displaycontainer...
 // 感觉可以分开写 不要把渲染也扯进来 只作为单独的游戏跳转单元就好了
 function Scene_Base() {
     this.initialize.apply(this, arguments);
 }
 
 //继承于Stage类 所以scene是一个特殊的显示对象 可以理解为安卓里最外面的布局对象 以及flash的stage对象
-//其实场景跳转的实现估计也就和安卓fragment的插拔差不多 一个root对象显示另一个root不显示
 Scene_Base.prototype = Object.create(Stage.prototype);
 Scene_Base.prototype.constructor = Scene_Base;
 

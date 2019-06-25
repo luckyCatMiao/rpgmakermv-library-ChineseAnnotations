@@ -2268,7 +2268,7 @@ function Input() {
 Input.initialize = function() {
     //初始化变量
     this.clear();
-    //不太清楚干啥 貌似是检测是不是运行在nw.js上
+    //repack alert方法
     this._wrapNwjsAlert();
     //设置监听器  keydown keyup
     this._setupEventHandlers();

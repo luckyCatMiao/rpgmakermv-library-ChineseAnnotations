@@ -926,7 +926,7 @@ ImageManager.loadNormalBitmap = function (path, hue) {
         bitmap.addLoadListener(function () {
             bitmap.rotateHue(hue);
         });
-        //放入缓存中 他这里并不是加载完毕后再放入 而是放入后再加载
+        //放入缓存中 他这里并不是加载完毕后再放入 而是放入后再加载，这样可以防止重复加载
         this._cache[key] = bitmap;
     }
     return this._cache[key];
@@ -1640,13 +1640,14 @@ SceneManager._screenHeight = 624;
 SceneManager._boxWidth = 816;
 SceneManager._boxHeight = 624;
 /**
- * 刷新频率
+ * 刷新频率(最高帧数)
  * @type {number}
  * @private
  */
 SceneManager._deltaTime = 1.0 / 60.0;
-//当前游戏运行时间
+//当前游戏运行时间(其实这里有一个设计问题，即这些时间相关变量不应该放在场景管理器这个无关的东西中，而应该另分几个类)
 SceneManager._currentTime = SceneManager._getTimeInMs();
+//游戏累计时间
 SceneManager._accumulator = 0.0;
 
 /**
@@ -1655,9 +1656,9 @@ SceneManager._accumulator = 0.0;
  */
 SceneManager.run = function (sceneClass) {
     try {
-        //初始化主系统
+        //场景管理器初始化，这里是一个典型的延时初始化
         this.initialize();
-        //加载该场景
+        //跳转到传入的场景类
         this.goto(sceneClass);
         //开启主循环
         this.requestUpdate();
@@ -1679,6 +1680,7 @@ SceneManager.initialize = function () {
     this.initAudio();
     //初始化输入子系统
     this.initInput();
+    //初始化nw.js(只在nodejs环境下有用)
     this.initNwjs();
     //检测插件读取错误
     this.checkPluginErrors();
@@ -1691,13 +1693,13 @@ SceneManager.initialize = function () {
  */
 SceneManager.initGraphics = function () {
 
-    //根据当前上下文 获取底层渲染机智(webgl或者canvas)
+    //根据当前上下文 获取底层渲染机制(webgl或者canvas)
     var type = this.preferableRendererType();
     //初始化渲染器
     Graphics.initialize(this._screenWidth, this._screenHeight, type);
     Graphics.boxWidth = this._boxWidth;
     Graphics.boxHeight = this._boxHeight;
-    //设置加载图片的路径
+    //设置加载中图片
     Graphics.setLoadingImage('img/system/Loading.png');
     //如果设置了显示fps的选项
     if (Utils.isOptionValid('showfps')) {
@@ -1716,11 +1718,14 @@ SceneManager.initGraphics = function () {
  * @returns {*}
  */
 SceneManager.preferableRendererType = function () {
+    //检测url的queryString部分是否有加canvas参数 canvas的优先级大于webgl
     if (Utils.isOptionValid('canvas')) {
         return 'canvas';
     } else if (Utils.isOptionValid('webgl')) {
         return 'webgl';
-    } else if (this.shouldUseCanvasRenderer()) {
+    }
+    //如果没加显式参数，则检测是否在手机平台上，是的话用canvas
+    else if (this.shouldUseCanvasRenderer()) {
         return 'canvas';
     } else {
         return 'auto';
@@ -1797,7 +1802,7 @@ SceneManager.requestUpdate = function () {
  */
 SceneManager.update = function () {
     try {
-        //计时开始 他这里的更新可能是跟unity的时间间隔式(update)差不多而不是锁定时间的循环(fixupdate)
+        //计时开始 这个游戏框架的循环是那种不锁定单帧时间的，即越好的电脑帧数越高。这种就是处理起来麻烦一点
         this.tickStart();
         //游戏循环
         this.updateMain();
@@ -1876,10 +1881,10 @@ SceneManager.updateInputData = function () {
  */
 SceneManager.updateMain = function () {
 
-    //计算距离上一帧所经过的时间
-    //这里把最低帧数锁定在了40
+    //获取执行上一帧所用的时间
     var newTime = this._getTimeInMs();
     var fTime = (newTime - this._currentTime) / 1000;
+    //这里把最长时间限定在了0.25，即一秒40帧，如果低于这个帧数则按这个帧数计算
     if (fTime > 0.25) fTime = 0.25;
     this._currentTime = newTime;
     this._accumulator += fTime;
@@ -1897,7 +1902,7 @@ SceneManager.updateMain = function () {
     }
     //渲染场景
     this.renderScene();
-    //这里为啥又来了一句？感觉好像死循环了(然而并没有不知道为什么)
+    //请求下一次循环
     this.requestUpdate();
 };
 

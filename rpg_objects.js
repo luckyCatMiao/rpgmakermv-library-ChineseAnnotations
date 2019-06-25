@@ -6755,6 +6755,10 @@ Game_CharacterBase.prototype.isThrough = function() {
     return this._through;
 };
 
+/**
+ * 设置所有图块都可以通过
+ * @param through
+ */
 Game_CharacterBase.prototype.setThrough = function(through) {
     this._through = through;
 };
@@ -7479,7 +7483,7 @@ Game_Player.prototype.performTransfer = function() {
 };
 
 Game_Player.prototype.isMapPassable = function(x, y, d) {
-    //这里先当前是否有交通工具，因为交通工具对某些图块有特殊的通行性
+    //这里先检测当前是否有交通工具，因为交通工具对某些图块有特殊的通行性
     var vehicle = this.vehicle();
     if (vehicle) {
         return vehicle.isMapPassable(x, y, d);
@@ -7492,26 +7496,50 @@ Game_Player.prototype.vehicle = function() {
     return $gameMap.vehicle(this._vehicleType);
 };
 
+/**
+ * 当前角色是否在船上
+ * @returns {boolean}
+ */
 Game_Player.prototype.isInBoat = function() {
     return this._vehicleType === 'boat';
 };
 
+/**
+ * 当前角色是否在船上(游戏里有两种船)
+ * @returns {boolean}
+ */
 Game_Player.prototype.isInShip = function() {
     return this._vehicleType === 'ship';
 };
 
+/**
+ * 当前角色是否在飞空艇上
+ * @returns {boolean}
+ */
 Game_Player.prototype.isInAirship = function() {
     return this._vehicleType === 'airship';
 };
 
+/**
+ *  当前角色是否在交通工具上
+ * @returns {boolean}
+ */
 Game_Player.prototype.isInVehicle = function() {
     return this.isInBoat() || this.isInShip() || this.isInAirship();
 };
 
+/**
+ * 人物是否在普通的走路状态(不在交通工具和脚本运动中)
+ * @returns {boolean}
+ */
 Game_Player.prototype.isNormal = function() {
     return this._vehicleType === 'walk' && !this.isMoveRouteForcing();
 };
 
+/**
+ *人物是否在跑
+ * @returns {boolean|*}
+ */
 Game_Player.prototype.isDashing = function() {
     return this._dashing;
 };
@@ -7520,6 +7548,12 @@ Game_Player.prototype.isDebugThrough = function() {
     return Input.isPressed('control') && $gameTemp.isPlaytest();
 };
 
+/**
+ * 人物是否碰到了障碍物
+ * @param x
+ * @param y
+ * @returns {*}
+ */
 Game_Player.prototype.isCollided = function(x, y) {
     if (this.isThrough()) {
         return false;
@@ -7624,13 +7658,13 @@ Game_Player.prototype.moveByInput = function() {
         if (direction > 0) {
             $gameTemp.clearDestination();
         }
-        //如果是鼠标点击移动 则进行寻路
+        //进行寻路
             else if ($gameTemp.isDestinationValid()){
             var x = $gameTemp.destinationX();
             var y = $gameTemp.destinationY();
             direction = this.findDirectionTo(x, y);
         }
-        //如果是键盘移动
+
         if (direction > 0) {
             this.executeMove(direction);
         }
@@ -7638,19 +7672,23 @@ Game_Player.prototype.moveByInput = function() {
 };
 
 /**
- * 当前是否可以移动
+ * 检测当前是否可以移动
  * @returns {boolean}
  */
 Game_Player.prototype.canMove = function() {
+    //不在事件中
     if ($gameMap.isEventRunning() || $gameMessage.isBusy()) {
         return false;
     }
+    //不在强制移动中 不在跟随者移动的动画中
     if (this.isMoveRouteForcing() || this.areFollowersGathering()) {
         return false;
     }
+    //不在切换交通工具的动画中
     if (this._vehicleGettingOn || this._vehicleGettingOff) {
         return false;
     }
+    //如果当前在交通工具上则检测交通工具是否可以移动
     if (this.isInVehicle() && !this.vehicle().canMove()) {
         return false;
     }
@@ -7665,6 +7703,10 @@ Game_Player.prototype.executeMove = function(direction) {
     this.moveStraight(direction);
 };
 
+/**
+ * 更新角色和相关的数据
+ * @param sceneActive
+ */
 Game_Player.prototype.update = function(sceneActive) {
     var lastScrolledX = this.scrolledX();
     var lastScrolledY = this.scrolledY();
@@ -7676,34 +7718,55 @@ Game_Player.prototype.update = function(sceneActive) {
         this.moveByInput();
     }
     Game_Character.prototype.update.call(this);
+    //更新地图滚动位置
     this.updateScroll(lastScrolledX, lastScrolledY);
+    //更新交通工具事件
     this.updateVehicle();
     if (!this.isMoving()) {
         this.updateNonmoving(wasMoving);
     }
+    //更新跟随者的位置
     this._followers.update();
 };
 
+/**
+ * 更新是否在跑
+ */
 Game_Player.prototype.updateDashing = function() {
+    //如果正在走则return
     if (this.isMoving()) {
         return;
     }
+    //如果可以移动 且不在交通工具上(交通工具没有跑动的状态)，且跑动没有被禁止
     if (this.canMove() && !this.isInVehicle() && !$gameMap.isDashDisabled()) {
+        //检测跑动按钮是否按下 或者在跑动寻路中
         this._dashing = this.isDashButtonPressed() || $gameTemp.isDestinationValid();
     } else {
         this._dashing = false;
     }
 };
 
+/**
+ * 返回跑动按钮是否按下
+ * @returns {*}
+ */
 Game_Player.prototype.isDashButtonPressed = function() {
     var shift = Input.isPressed('shift');
+    //如果在配置中设置默认跑动，则按下shift为走而不是跑，所以此时反转返回值
     if (ConfigManager.alwaysDash) {
         return !shift;
-    } else {
+    }
+    //否则正常返回shift键是否按下
+    else {
         return shift;
     }
 };
 
+/**
+ * 更新地图滚动
+ * @param lastScrolledX
+ * @param lastScrolledY
+ */
 Game_Player.prototype.updateScroll = function(lastScrolledX, lastScrolledY) {
     var x1 = lastScrolledX;
     var y1 = lastScrolledY;
@@ -7735,12 +7798,20 @@ Game_Player.prototype.updateVehicle = function() {
     }
 };
 
+/**
+ * 更新角色状态为在交通工具上
+ */
 Game_Player.prototype.updateVehicleGetOn = function() {
+    //如果跟随者不在动画中 且当前不在移动中
     if (!this.areFollowersGathering() && !this.isMoving()) {
+        //设置朝向与交通工具的朝向同步
         this.setDirection(this.vehicle().direction());
+        //设置移动速度为交通工具的移动速度
         this.setMoveSpeed(this.vehicle().moveSpeed());
         this._vehicleGettingOn = false;
+        //设置透明
         this.setTransparent(true);
+        //如果登上了飞空艇，则设置所有图块都可以通过
         if (this.isInAirship()) {
             this.setThrough(true);
         }
@@ -7748,10 +7819,11 @@ Game_Player.prototype.updateVehicleGetOn = function() {
     }
 };
 
+//离开交通工具
 Game_Player.prototype.updateVehicleGetOff = function() {
     if (!this.areFollowersGathering() && this.vehicle().isLowest()) {
-        this._vehicleGettingOff = false;
-        this._vehicleType = 'walk';
+        this._vehicleGettingOff = false
+        this._vehicleType = 'walk';;
         this.setTransparent(false);
     }
 };
@@ -8318,10 +8390,15 @@ Game_Vehicle.prototype.isMapPassable = function(x, y, d) {
     }
 };
 
+/**
+ * 进入该交通工具时调用
+ */
 Game_Vehicle.prototype.getOn = function() {
     this._driving = true;
+    //设置动画
     this.setWalkAnime(true);
     this.setStepAnime(true);
+    //更换bgm(如果有的话)
     $gameSystem.saveWalkingBgm();
     this.playBgm();
 };
